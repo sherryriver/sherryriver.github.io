@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>数据中台 | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="2," />
+  
+
+  <meta name="description" content="恰逢公司要搭建数据中台，我所在的数据中心部门担此重任，幸运的也跟着学习了很多知识，抽个时间来聊聊数据中台话题。 数据中台是什么？ VS数仓与数据平台的区别 关键在于数据中台相对于数仓、数据平台，向前台、向业务又迈出了一步，不再只是关心技术层面数据的打造，同时开始更多地关注企业层面的数据治理以及数据资产化的内容。 数据平台你可以把它看成是数据集，那么数据中台呢他就是数据集API 数据中台解决什么问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据中台">
+<meta property="og:url" content="http://sherryriver.github.io/2020/10/15/%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="恰逢公司要搭建数据中台，我所在的数据中心部门担此重任，幸运的也跟着学习了很多知识，抽个时间来聊聊数据中台话题。 数据中台是什么？ VS数仓与数据平台的区别 关键在于数据中台相对于数仓、数据平台，向前台、向业务又迈出了一步，不再只是关心技术层面数据的打造，同时开始更多地关注企业层面的数据治理以及数据资产化的内容。 数据平台你可以把它看成是数据集，那么数据中台呢他就是数据集API 数据中台解决什么问题">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-15T01:30:57.000Z">
+<meta property="article:modified_time" content="2020-12-15T07:20:47.062Z">
+<meta property="article:author" content="sherryriver">
+<meta property="article:tag" content="2">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-数据中台" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">数据中台</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2020.10.15</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/2/">2</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>恰逢公司要搭建数据中台，我所在的数据中心部门担此重任，幸运的也跟着学习了很多知识，抽个时间来聊聊数据中台话题。</p>
+<p>数据中台是什么？</p>
+<p>VS数仓与数据平台的区别</p>
+<p>关键在于数据中台相对于数仓、数据平台，向前台、向业务又迈出了一步，不再只是关心技术层面数据的打造，同时开始更多地关注企业层面的数据治理以及数据资产化的内容。</p>
+<p>数据平台你可以把它看成是数据集，那么数据中台呢他就是<strong>数据集API</strong></p>
+<p>数据中台解决什么问题？或者说它能带给企业什么？</p>
+<p>毋庸置疑现在时代数据大爆炸，</p>
+<p>什么样的企业适合数据中台？</p>
+<p>结合企业的现状，按需选择。</p>
+<p>企业是否有大量的数据应用场景：数据中台本身并不能直接产生业务价值，数据中台的本质是支撑快速地孵化数据应用。所以当你的企业有较多数据应用的场景时，就像我司有金融、新零售等多个产品业务线，此时你要考虑构建一个数据中台。</p>
+<p>是否需要整合各个业务系统的数据，进行关联的分析。</p>
+<p>是否需要通过数据提高企业运营效率，控制成本。</p>
+<p>企业规模也是一个考虑因素，因为数据中台前期投入大，并不适合创业公司。</p>
+<p>数据中台建设的理论</p>
+
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2020/10/15/数据中台/" target="_blank" title="数据中台">数据中台</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2020.10.15</li>
+	<li><span>本文链接：</span> <a href="/2020/10/15/数据中台/" target="_blank" title="数据中台">http://sherryriver.github.io/2020/10/15/数据中台/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

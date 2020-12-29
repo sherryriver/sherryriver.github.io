@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>缓存二三事 | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="缓存," />
+  
+
+  <meta name="description" content="应对高并发流量的三把利器：缓存、限流与降级。所以合理使用缓存很重要。缓存，空间换时间一种解决方案。不谈缓存的实现框架，只结合在开发中遇到的问题，当然这些问题前人大佬已经填坑了，让我们能够更好的使用缓存。正所谓前人栽树后人乘凉。 缓存的更新策略对比：    策略 一致性 维护成本    FIFO、LRU等算法 最差 低   超时去除 较差 一般   主动更新 强 高   缓存穿透：查询一个必然不存在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="缓存二三事">
+<meta property="og:url" content="http://sherryriver.github.io/2018/02/01/%E7%BC%93%E5%AD%98%E4%BA%8C%E4%B8%89%E4%BA%8B/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="应对高并发流量的三把利器：缓存、限流与降级。所以合理使用缓存很重要。缓存，空间换时间一种解决方案。不谈缓存的实现框架，只结合在开发中遇到的问题，当然这些问题前人大佬已经填坑了，让我们能够更好的使用缓存。正所谓前人栽树后人乘凉。 缓存的更新策略对比：    策略 一致性 维护成本    FIFO、LRU等算法 最差 低   超时去除 较差 一般   主动更新 强 高   缓存穿透：查询一个必然不存在">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-01T01:50:42.000Z">
+<meta property="article:modified_time" content="2018-04-23T06:04:26.000Z">
+<meta property="article:author" content="sherryriver">
+<meta property="article:tag" content="缓存">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-缓存二三事" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">缓存二三事</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.02.01</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6%E6%8A%80%E6%9C%AF/">流水账技术</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>应对高并发流量的三把利器：缓存、限流与降级。所以合理使用缓存很重要。<br>缓存，空间换时间一种解决方案。<br>不谈缓存的实现框架，只结合在开发中遇到的问题，当然这些问题前人大佬已经填坑了，让我们能够更好的使用缓存。正所谓前人栽树后人乘凉。</p>
+<p>缓存的更新策略对比：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th align="center">一致性</th>
+<th align="right">维护成本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FIFO、LRU等算法</td>
+<td align="center">最差</td>
+<td align="right">低</td>
+</tr>
+<tr>
+<td>超时去除</td>
+<td align="center">较差</td>
+<td align="right">一般</td>
+</tr>
+<tr>
+<td>主动更新</td>
+<td align="center">强</td>
+<td align="right">高</td>
+</tr>
+</tbody></table>
+<p>缓存穿透：<br>查询一个必然不存在的数据，这样每次都会访问DB，如果有人恶意破坏，就有可能直接对DB造成影响<br>解决方案：缓存空对象， 对查询结果为空的情况也进行缓存，缓存时间设置短一点，或者该key对应的数据insert了之后清理缓存。</p>
+<p>缓存并发/热点key问题：<br>一个热点key失效，可能出现多个进程同时查询DB，同时设置缓存。<br>解决方案：使用互斥锁（mutex key） 比如redis的setnx 分布式锁</p>
+<p>雪崩问题：<br>当缓存服务器重启或者设置缓存时采用了相同的过期时间，导致缓存在某一时刻同时失效，请求全部转发到DB，DB瞬时压力过重雪崩。<br>解决方案：1、保证cache的高可用。2、不同的key，设置不同的过期时间，让缓存失效的时间点尽量均匀 </p>
+
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2018/02/01/缓存二三事/" target="_blank" title="缓存二三事">缓存二三事</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2018.02.01</li>
+	<li><span>本文链接：</span> <a href="/2018/02/01/缓存二三事/" target="_blank" title="缓存二三事">http://sherryriver.github.io/2018/02/01/缓存二三事/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

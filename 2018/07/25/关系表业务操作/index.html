@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>关系表修改操作的一种思路 | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Java," />
+  
+
+  <meta name="description" content="对于关系表的修改操作，先提下何为关联表，在数据表设计中，多对多关系中间会定义一张关联表。我用项目中产品为例，产品： 电商通产品、企业通产品 …产品策略：  等额本息、等额本金、先息后本…产品与产品策略之间 比如product_strategy_rel表相关联 在产品或者产品策略的cud操作时候会修改该表，之前我的做法（也是身边人做法）不管对于新增还是修改操作，查询关系表相关数据后全部删除，再根据最">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关系表修改操作的一种思路">
+<meta property="og:url" content="http://sherryriver.github.io/2018/07/25/%E5%85%B3%E7%B3%BB%E8%A1%A8%E4%B8%9A%E5%8A%A1%E6%93%8D%E4%BD%9C/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="对于关系表的修改操作，先提下何为关联表，在数据表设计中，多对多关系中间会定义一张关联表。我用项目中产品为例，产品： 电商通产品、企业通产品 …产品策略：  等额本息、等额本金、先息后本…产品与产品策略之间 比如product_strategy_rel表相关联 在产品或者产品策略的cud操作时候会修改该表，之前我的做法（也是身边人做法）不管对于新增还是修改操作，查询关系表相关数据后全部删除，再根据最">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-07-25T10:52:55.000Z">
+<meta property="article:modified_time" content="2018-09-07T04:49:30.000Z">
+<meta property="article:author" content="sherryriver">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-关系表业务操作" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">关系表修改操作的一种思路</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.07.25</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6%E6%8A%80%E6%9C%AF/">流水账技术</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>对于关系表的修改操作，先提下何为关联表，在数据表设计中，多对多关系中间会定义一张关联表。<br>我用项目中产品为例，<br>产品： 电商通产品、企业通产品 …<br>产品策略：  等额本息、等额本金、先息后本…<br>产品与产品策略之间 比如product_strategy_rel表相关联</p>
+<p>在产品或者产品策略的cud操作时候会修改该表，<br>之前我的做法（也是身边人做法）不管对于新增还是修改操作，查询关系表相关数据后全部删除，再根据最新的全部添加。逻辑简单，简单粗暴。</p>
+<p>伪代码：<br>delete from table_rel where id = 1;<br>insert into table_rel (id、value) values (1, 1), (1, 2), (1, 3);</p>
+<p>在某些条件下是可接受的，比如，新增的数据跟原有数据没有大量的重复。但是如果出现大量的重复数据只是一小部分的更改就得不偿失了。<br>最近重新审视了一下这个野蛮的做法，试着能不能优化它呢</p>
+<p>我的解决如下，当然前提是数据量不是很大的情况下，基于集合的内存操作，用空间换时间</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;新增数据</span><br><span class="line">        List&lt;Integer&gt; listAdd &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line">        listAdd.add(1);</span><br><span class="line">        listAdd.add(2);</span><br><span class="line">        listAdd.add(3);</span><br><span class="line">        listAdd.add(4);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;copy新增数据</span><br><span class="line">        List&lt;Integer&gt; listAddCopy &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line">        listAddCopy.addAll(listAdd);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;原存在数据</span><br><span class="line">        List&lt;Integer&gt; list &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line">        list.add(2);</span><br><span class="line">        list.add(3);</span><br><span class="line">        list.add(4);</span><br><span class="line">        list.add(5);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 交集</span><br><span class="line">        listAddCopy.retainAll(list);</span><br><span class="line">        if(CollectionUtils.isNotEmpty(listAddCopy))&#123;</span><br><span class="line">            listAdd.removeAll(listAddCopy);</span><br><span class="line">            list.removeAll(listAddCopy);</span><br><span class="line">            System.out.println(listAddCopy);</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;需新增数据</span><br><span class="line">        System.out.println(listAdd);</span><br><span class="line">        &#x2F;&#x2F;需删除数据</span><br><span class="line">        System.out.println(list);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果如下：<br>[1]<br>[5]</p>
+<p>这样对于listAdd的数据进行新增操作<br>对于list的数据进行删除操作，避免了全删再新增。</p>
+
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2018/07/25/关系表业务操作/" target="_blank" title="关系表修改操作的一种思路">关系表修改操作的一种思路</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2018.07.25</li>
+	<li><span>本文链接：</span> <a href="/2018/07/25/关系表业务操作/" target="_blank" title="关系表修改操作的一种思路">http://sherryriver.github.io/2018/07/25/关系表业务操作/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

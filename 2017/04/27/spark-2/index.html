@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spark快速大数据分析—读书笔记（二） | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="读书笔记," />
+  
+
+  <meta name="description" content="RDD数据核心-RDD接下来说下Spark的核心RDD。RDD-弹性分布式数据集，其实就是分布式的元素集合，在Spark里面对数据的操作无外乎都是围绕RDD来实现的。RDD特点：1、不可变 2、分布式 RDD的创建1、读取一个外部数据集  lines &#x3D; sc.textFile(&quot;README.md&quot;) 2、在程序里分发对象集合（对集合进行并行化） lines &#x3D; sc.par">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark快速大数据分析—读书笔记（二）">
+<meta property="og:url" content="http://sherryriver.github.io/2017/04/27/spark-2/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="RDD数据核心-RDD接下来说下Spark的核心RDD。RDD-弹性分布式数据集，其实就是分布式的元素集合，在Spark里面对数据的操作无外乎都是围绕RDD来实现的。RDD特点：1、不可变 2、分布式 RDD的创建1、读取一个外部数据集  lines &#x3D; sc.textFile(&quot;README.md&quot;) 2、在程序里分发对象集合（对集合进行并行化） lines &#x3D; sc.par">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-04-27T01:41:20.000Z">
+<meta property="article:modified_time" content="2020-11-10T06:02:54.208Z">
+<meta property="article:author" content="sherryriver">
+<meta property="article:tag" content="读书笔记">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#RDD"><span class="toc-text">RDD</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A0%B8%E5%BF%83-RDD"><span class="toc-text">数据核心-RDD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RDD%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-text">RDD的创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RDD%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="toc-text">RDD的操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0"><span class="toc-text">传递参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-text">持久化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84RDD%E6%93%8D%E4%BD%9C"><span class="toc-text">常见的RDD操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%AE%E5%80%BC%E5%AF%B9%E3%80%81%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%8F%96%E4%B8%8E%E4%BF%9D%E5%AD%98"><span class="toc-text">键值对、数据读取与保存</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%AE%E5%80%BC%E5%AF%B9RDD"><span class="toc-text">键值对RDD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pairRDD%E5%88%9B%E5%BB%BA"><span class="toc-text">pairRDD创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pairRDD%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="toc-text">pairRDD的操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%9A%84%E8%AF%BB%E5%8F%96%E4%B8%8E%E4%BF%9D%E5%AD%98"><span class="toc-text">数据的读取与保存</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spark%E8%BF%9B%E9%98%B6"><span class="toc-text">Spark进阶</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%AF%E5%8A%A0%E5%99%A8"><span class="toc-text">累加器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%BF%E6%92%AD%E5%8F%98%E9%87%8F"><span class="toc-text">广播变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E5%80%BCRDD%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="toc-text">数值RDD的操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spark-SQL%E4%B8%8ESpark-Streaming"><span class="toc-text">Spark SQL与Spark Streaming</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-spark-2" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Spark快速大数据分析—读书笔记（二）</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2017.04.27</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/spark/">spark</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="RDD"><a href="#RDD" class="headerlink" title="RDD"></a>RDD</h2><h3 id="数据核心-RDD"><a href="#数据核心-RDD" class="headerlink" title="数据核心-RDD"></a><strong>数据核心-RDD</strong></h3><p>接下来说下Spark的核心RDD。RDD-弹性分布式数据集，其实就是分布式的元素集合，在Spark里面对数据的操作无外乎都是围绕RDD来实现的。<br>RDD特点：1、不可变 2、分布式</p>
+<h3 id="RDD的创建"><a href="#RDD的创建" class="headerlink" title="RDD的创建"></a><strong>RDD的创建</strong></h3><p>1、读取一个外部数据集 </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">lines = sc.textFile(<span class="string">&quot;README.md&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>2、在程序里分发对象集合（对集合进行并行化）</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">lines = sc.parallelize([a,b,c,d])</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="RDD的操作"><a href="#RDD的操作" class="headerlink" title="RDD的操作"></a><strong>RDD的操作</strong></h3><p>正因为RDD的不可变，所以进行数据操作时引入两种操作：<br>1、Tansformation（转化操作）：<br>返回一个新的RDD。但是转化出来的RDD是惰性的，即转化后不会马上计算，只有在Action行动操作时候才会生效。</p>
+<p>2、Action（行动操作）：<br>返回执行结果，Spark真正的计算，结果返回到内存或者其他像hdfs外部储存系统中。</p>
+<h3 id="传递参数"><a href="#传递参数" class="headerlink" title="传递参数"></a><strong>传递参数</strong></h3><p>1、lambda表达式（适用于比较短的函数）</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">word = rdd.<span class="built_in">filter</span>(<span class="keyword">lambda</span> s:<span class="string">&quot;error&quot;</span> <span class="keyword">in</span> s)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">containsError</span>(<span class="params">s</span>):</span></span><br><span class="line">	<span class="keyword">return</span> <span class="string">&quot;error&quot;</span> <span class="keyword">in</span> s</span><br><span class="line">word = rdd.<span class="built_in">filter</span>(containsError)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>2、def函数<br>会把整个对象传递过去。但是要注意如下错误:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SearchFuctions</span>(<span class="params"><span class="built_in">object</span></span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.query = query</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getQuery</span>(<span class="params">self, rdd</span>):</span></span><br><span class="line">        <span class="comment">#问题：因为在&quot;self.query&quot;中引用了整个self</span></span><br><span class="line">        <span class="keyword">return</span> rdd.<span class="built_in">map</span>(<span class="keyword">lambda</span> s: self.query + x)</span><br></pre></td></tr></table></figure>
+<p>如果你传递的对象是某个对象的成员或者是引用某个函数的一个字段，会出现错误。<br>解决方法：<br>改成局部变量</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SearchFuctions</span>(<span class="params"><span class="built_in">object</span></span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.query = query</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getQuery</span>(<span class="params">self, rdd</span>):</span></span><br><span class="line">        <span class="comment">#需要的字段提取到局部变量中即可</span></span><br><span class="line">        queryLocal = self.query</span><br><span class="line">        <span class="keyword">return</span> rdd.<span class="built_in">map</span>(<span class="keyword">lambda</span> s: queryLocal + x)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a><strong>持久化</strong></h3><p>Spark的RDD是惰性的，如果多次使用同一个RDD，进行执行操作就会多次重算RDD以及它的所有依赖。极大的消耗内存。对此，我们使用RDD.persist()，Spark对数据实现持久化，默认是LRU的缓存策略。如果想手动移除持久化的RDD 可以使用RDD.unpersist()操作。</p>
+<h3 id="常见的RDD操作"><a href="#常见的RDD操作" class="headerlink" title="常见的RDD操作"></a><strong>常见的RDD操作</strong></h3><p>1、map() 与filter()区别：一张图足以（来源书贴图）</p>
+<p>2、伪集合操作<br>distinct()<br>union()<br>intersection()<br>subtract()</p>
+<p>3、常用的行动操作<br>reduce()<br>collect()<br>take(n)<br>top()<br>count()</p>
+<h2 id="键值对、数据读取与保存"><a href="#键值对、数据读取与保存" class="headerlink" title="键值对、数据读取与保存"></a>键值对、数据读取与保存</h2><h3 id="键值对RDD"><a href="#键值对RDD" class="headerlink" title="键值对RDD"></a><strong>键值对RDD</strong></h3><p>键值对RDD 记做pairRDD 通常用来进行聚合计算。 你可以把它理解成 map（有误请指正）</p>
+<h3 id="pairRDD创建"><a href="#pairRDD创建" class="headerlink" title="pairRDD创建"></a><strong>pairRDD创建</strong></h3><p>1、键值对的数据格式读取时直接返回为pairRDD<br>2、通过map()函数把普通的RDD转为pairRDD</p>
+<h3 id="pairRDD的操作"><a href="#pairRDD的操作" class="headerlink" title="pairRDD的操作"></a><strong>pairRDD的操作</strong></h3><p>1、转化操作</p>
+<p>2、行动操作</p>
+<h3 id="数据的读取与保存"><a href="#数据的读取与保存" class="headerlink" title="数据的读取与保存"></a><strong>数据的读取与保存</strong></h3><p>之前谈到的都是Spark对本地集合或者普通文件中的数据的操作。如果大数据量或者是分布式的情况下，问题该怎么解决呢？接下来谈谈实用方法了。<br>三种常见的数据源以及Spark对应的读取与保存<br>1、文件格式与文件系统<br>2、SparkSQL中的结构化数据源<br>3、数据库与键值存储</p>
+<h2 id="Spark进阶"><a href="#Spark进阶" class="headerlink" title="Spark进阶"></a>Spark进阶</h2><p>介绍2点<br>1、Spark中两种类型的共享变量：累加器与广播变量<br>2、数值RDD的操作</p>
+<p>集群上运行Spark和Spark调优与调试这块，为了不误人子弟后续深入后再补<br>ps:坑已补 请戳—&gt;<a target="_blank" rel="noopener" href="http://sherryriver.com/2017/05/11/spark-7/">补漏篇</a></p>
+<h3 id="累加器"><a href="#累加器" class="headerlink" title="累加器"></a><strong>累加器</strong></h3><p>对信息进行聚合，常见用途就是在调试中对作业执行过程中的事件进行计数</p>
+<h3 id="广播变量"><a href="#广播变量" class="headerlink" title="广播变量"></a><strong>广播变量</strong></h3><p>作用是高效分发较大的对象</p>
+<h3 id="数值RDD的操作"><a href="#数值RDD的操作" class="headerlink" title="数值RDD的操作"></a><strong>数值RDD的操作</strong></h3><h2 id="Spark-SQL与Spark-Streaming"><a href="#Spark-SQL与Spark-Streaming" class="headerlink" title="Spark SQL与Spark Streaming"></a>Spark SQL与Spark Streaming</h2>
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2017/04/27/spark-2/" target="_blank" title="Spark快速大数据分析—读书笔记（二）">Spark快速大数据分析—读书笔记（二）</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2017.04.27</li>
+	<li><span>本文链接：</span> <a href="/2017/04/27/spark-2/" target="_blank" title="Spark快速大数据分析—读书笔记（二）">http://sherryriver.github.io/2017/04/27/spark-2/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

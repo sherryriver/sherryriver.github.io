@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>springcloud实战落地填坑 | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="springcloud," />
+  
+
+  <meta name="description" content="如果看过之前我写的博客的应该知道，早在16年的时候就关注了sc这一股新力量，当时只是私下时间关注。到了新的一年sc发展迅猛，幸运的是目前新公司一个新项目要采用sc架构，正好有机会参与。记录下当时项目实战落地解决一些坑 1、Feign支持上传而且接口又支持表单模式提交 &lt;dependency&gt;  &lt;groupId&gt;io.github.openfeign.form&lt;&#x2F;gr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="springcloud实战落地填坑">
+<meta property="og:url" content="http://sherryriver.github.io/2018/06/14/sc/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="如果看过之前我写的博客的应该知道，早在16年的时候就关注了sc这一股新力量，当时只是私下时间关注。到了新的一年sc发展迅猛，幸运的是目前新公司一个新项目要采用sc架构，正好有机会参与。记录下当时项目实战落地解决一些坑 1、Feign支持上传而且接口又支持表单模式提交 &lt;dependency&gt;  &lt;groupId&gt;io.github.openfeign.form&lt;&#x2F;gr">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-06-14T11:59:48.000Z">
+<meta property="article:modified_time" content="2019-05-05T03:37:36.000Z">
+<meta property="article:author" content="sherryriver">
+<meta property="article:tag" content="springcloud">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-sc" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">springcloud实战落地填坑</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.06.14</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6%E6%8A%80%E6%9C%AF/">流水账技术</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>如果看过之前我写的博客的应该知道，早在16年的时候就关注了sc这一股新力量，当时只是私下时间关注。<br>到了新的一年sc发展迅猛，幸运的是目前新公司一个新项目要采用sc架构，正好有机会参与。<br>记录下当时项目实战落地解决一些坑</p>
+<p>1、Feign支持上传而且接口又支持表单模式提交</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;io.github.openfeign.form&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;feign-form&lt;/artifactId&gt;</span><br><span class="line">  &lt;version&gt;3.2.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;io.github.openfeign.form&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;feign-form-spring&lt;/artifactId&gt;</span><br><span class="line">  &lt;version&gt;3.2.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableFeignClients</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AdminAppBootstrap</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ObjectFactory&lt;HttpMessageConverters&gt; messageConverters;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Feign支持上传而且接口又支持表单模式提交</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Encoder <span class="title">feignFormEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SpringFormEncoder(<span class="keyword">new</span> SpringEncoder(messageConverters));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;    </span><br></pre></td></tr></table></figure>
+
+<p>2、解决Feign首次请求失败问题</p>
+<p>3、zuul网关默认过滤header部分内容的问题</p>
+<p>问题描述：<br>zuul网关默认过滤header中的敏感信息 Cookie，Set-Cookie，Authorization，也就是说不会将这些信息传到底层的微服务中，<br>由于我们的部分服务需要Authorization中的token信息，如果不更改默认配置，会导致下层服务中token获取不到。</p>
+<p>解决方式：<br>我们可以在配置文件中修改配置<br>例如：只拦截 Cookie,Set-Cookie</p>
+<p>zuul:<br>  sensitive-headers: Cookie,Set-Cookie   </p>
+<p>4、Feign性能测试</p>
+<p> 直接调业务接口在500的并发情况下，响应平均是300ms。经过cloud的转发，响应很多错误，发现是hystrix的线程限制原因，为了测试，简单粗暴的把hystrix功能关掉：feign.hystrix.enabled: false。测试的平均响应打到800+ms。依然是一个不能接收的结果</p>
+ <figure class="highlight"><table><tr><td class="code"><pre><span class="line"> &lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;com.netflix.feign&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;feign-okhttp&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;RELEASE&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>后续测试，平均响应在450ms左右</p>
+<p>5、Feign Client开启日志</p>
+<p>@FeignClient(name = “SERVICE-PRODUCT”, path = “/v1/product”,configuration = ProductServiceConfig.class)</p>
+<p>注解类的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProductServiceConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 	 Logger.Level 的具体级别如下：</span></span><br><span class="line"><span class="comment">         NONE：不记录任何信息</span></span><br><span class="line"><span class="comment">         BASIC：仅记录请求方法、URL以及响应状态码和执行时间</span></span><br><span class="line"><span class="comment">         HEADERS：除了记录 BASIC级别的信息外，还会记录请求和响应的头信息</span></span><br><span class="line"><span class="comment">         FULL：记录所有请求与响应的明细，包括头信息、请求体、元数据</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    Logger.<span class="function">Level <span class="title">feignLoggerLevel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Logger.Level.FULL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>6、版本需求<br>版本为微服务级别，也就是说不存在一个API是v3版，其他API还只是v1版的问题，要升级所有API版本一起升级，但是需要保证之前版本v1-v3还可以使用。<br>原则上要兼容上一个版本 如果当前是 /v3 则 /v2 要求可以正常使用 /v1 不做要求</p>
+<p>解决方法：<br>swagger注解就可以实现上述要求</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// v1版api 即将废弃</span></span><br><span class="line"><span class="meta">@ApiOperation(&quot;分页查询&quot;)</span></span><br><span class="line"><span class="meta">@RequestMapping(value = &quot;/v1/pb/product&quot;, method = RequestMethod.GET)</span></span><br><span class="line"><span class="meta">@Deprecated</span></span><br><span class="line"><span class="function">List&lt;Product&gt; <span class="title">selectAll</span><span class="params">(<span class="meta">@RequestParam(&quot;offset&quot;)</span> Integer offset, <span class="meta">@RequestParam(&quot;limit&quot;)</span> Integer limit)</span></span>;</span><br><span class="line"> </span><br><span class="line"><span class="comment">//ProviderApiAutoConfig.CURRENT_VERSION=&quot;v2&quot; 用来替换上面的v1版本</span></span><br><span class="line"><span class="meta">@ApiOperation(&quot;带过滤条件和排序的分页查询&quot;)</span></span><br><span class="line"><span class="meta">@RequestMapping(value = &quot;/&#123;version&#125;/pb/product&quot;, method = RequestMethod.GET)</span></span><br><span class="line"><span class="meta">@ApiImplicitParam(name = &quot;version&quot;, paramType = &quot;path&quot;, allowableValues = ProviderApiAutoConfig.CURRENT_VERSION, required = true)</span></span><br><span class="line">Resp&lt;PageData&lt;Product&gt;&gt; selectAllGet(Page page);</span><br><span class="line">  </span><br><span class="line"><span class="comment">// ProviderApiAutoConfig.COMPATIBLE_VERSION=&quot;v2,v1&quot; swagger-ui上会显示一个version的下拉框, 默认v2</span></span><br><span class="line"><span class="meta">@ApiOperation(value = &quot;带过滤条件和排序的复杂分页查询&quot;)</span></span><br><span class="line"><span class="meta">@ApiImplicitParam(name = &quot;version&quot;, paramType = &quot;path&quot;, allowableValues = ProviderApiAutoConfig.COMPATIBLE_VERSION, required = true)</span></span><br><span class="line"><span class="meta">@RequestMapping(value = &quot;/&#123;version&#125;/pb/product/action/search&quot;, method = RequestMethod.POST)</span></span><br><span class="line">Resp&lt;PageData&lt;Product&gt;&gt; selectAll(<span class="meta">@RequestBody</span> Page page);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2018/06/14/sc/" target="_blank" title="springcloud实战落地填坑">springcloud实战落地填坑</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2018.06.14</li>
+	<li><span>本文链接：</span> <a href="/2018/06/14/sc/" target="_blank" title="springcloud实战落地填坑">http://sherryriver.github.io/2018/06/14/sc/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

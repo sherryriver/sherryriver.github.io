@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>支付服务开发从0到1 | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="支付," />
+  
+
+  <meta name="description" content="0到1只是告诫自己才刚开始上路呢  今年的开发重心放在商城支付上。参与需求与表结构设计，独立负责支付服务接口的开发。之前没有支付相关开发经验。历史原因，公司的开发同事无一有相关经验。现在回想当时真胆大，主动提出做相关开发。 胆大可以，盲目胆大不可以，闭门造车不可取。因此在网上参考了很多支付开发的相关资料，推荐一个我比较中意的博客凤凰牌老熊 http:&#x2F;&#x2F;blog.lixf.cn&#x2F; 下面分享下在开">
+<meta property="og:type" content="article">
+<meta property="og:title" content="支付服务开发从0到1">
+<meta property="og:url" content="http://sherryriver.github.io/2017/10/23/%E6%94%AF%E4%BB%98%E5%BC%80%E5%8F%91%E4%BB%8E0%E5%88%B01/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="0到1只是告诫自己才刚开始上路呢  今年的开发重心放在商城支付上。参与需求与表结构设计，独立负责支付服务接口的开发。之前没有支付相关开发经验。历史原因，公司的开发同事无一有相关经验。现在回想当时真胆大，主动提出做相关开发。 胆大可以，盲目胆大不可以，闭门造车不可取。因此在网上参考了很多支付开发的相关资料，推荐一个我比较中意的博客凤凰牌老熊 http:&#x2F;&#x2F;blog.lixf.cn&#x2F; 下面分享下在开">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-10-23T08:18:20.000Z">
+<meta property="article:modified_time" content="2018-09-01T08:15:32.000Z">
+<meta property="article:author" content="sherryriver">
+<meta property="article:tag" content="支付">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E8%A6%81%E7%82%B9"><span class="toc-text">设计要点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8A%B1%E7%94%9F%E5%A3%B3-OR-ngrok"><span class="toc-text">花生壳 OR ngrok</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%AB%E7%A0%81%E6%94%AF%E4%BB%98%E6%B5%81%E7%A8%8B%E8%AE%BE%E8%AE%A1"><span class="toc-text">扫码支付流程设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A3%8E%E6%8E%A7"><span class="toc-text">风控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E6%8E%A5%E6%94%AF%E4%BB%98%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91"><span class="toc-text">对接支付遇到的坑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A1%AB%E5%9D%91"><span class="toc-text">填坑</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-支付开发从0到1" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">支付服务开发从0到1</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2017.10.23</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6%E6%8A%80%E6%9C%AF/">流水账技术</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <blockquote>
+<p>0到1只是告诫自己才刚开始上路呢</p>
+</blockquote>
+<p>今年的开发重心放在商城支付上。参与需求与表结构设计，独立负责支付服务接口的开发。之前没有支付相关开发经验。历史原因，公司的开发同事无一有相关经验。现在回想当时真胆大，主动提出做相关开发。</p>
+<p>胆大可以，盲目胆大不可以，闭门造车不可取。因此在网上参考了很多支付开发的相关资料，推荐一个我比较中意的博客<br>凤凰牌老熊 <a target="_blank" rel="noopener" href="http://blog.lixf.cn/">http://blog.lixf.cn/</a></p>
+<p>下面分享下在开发中攒的一些微小的经验</p>
+<h3 id="设计要点"><a href="#设计要点" class="headerlink" title="设计要点"></a>设计要点</h3><p>支付网关：对外提供支付服务的统一接口，安全校验、接口安全比如熔断、限流与隔离等<br>支付渠道：通过网关分发到对应的支付渠道模块</p>
+<h3 id="花生壳-OR-ngrok"><a href="#花生壳-OR-ngrok" class="headerlink" title="花生壳 OR ngrok"></a>花生壳 OR ngrok</h3><p>支付回调需要提供外网可访问地址，为了在调试时不影响复杂的部署成本，一般会通过工具实现外网能访问本机。<br>比较常用的工具有花生壳和ngrok</p>
+<p>我用的是开源的改良版ngrok<br>Github地址 minlia-cross <a target="_blank" rel="noopener" href="https://github.com/minlia-projects/minlia-cross">https://github.com/minlia-projects/minlia-cross</a><br>依赖下maven 启动就能使用 简单方便 还可以设置二级域名<br>感谢作者提供这么好的东东</p>
+<h3 id="扫码支付流程设计"><a href="#扫码支付流程设计" class="headerlink" title="扫码支付流程设计"></a>扫码支付流程设计</h3><p>特别提一下扫码支付，对接到支付宝支付时才发现扫码支付不返回前端的同步通知<br>这就比较尴尬了，前端开发人员就不能判别用户何时支付。一种方法就是在一定时间内的不停的请求后端服务器获取支付状态信息。显而易见，性能是个隐患。<br>我们采用的方法类似于12306的支付操作，通过用户点击操作告之前端向服务器获取支付状态。</p>
+<h3 id="风控"><a href="#风控" class="headerlink" title="风控"></a>风控</h3><p>要不要做？要！<br>怎么做？<br>随着业务的发展与产品的成熟风控安全不断加强。单打独斗能力有限，还需要与其他部门的配合，如基于大数据的风险控制。更专业的会成立风控团队。</p>
+<h3 id="对接支付遇到的坑"><a href="#对接支付遇到的坑" class="headerlink" title="对接支付遇到的坑"></a>对接支付遇到的坑</h3><p>不提名字的话这个坑就白说了 O(∩_∩)O<br>我只提下我比较不能容忍的<br>先提一下 要有一个懂相关业务的产品经理啊 至少是负责的，不然还得跟他一起沟通需求，对接中突然出现各种资料缺失很影响开发效率的！！ 血的经验！</p>
+<p><strong>通联支付</strong>（第三方综合支付） 只回调支付成功信息，支付失败不返回。。查单也只能查询支付成功的信息（大坑啊）还有在支付提交时间要按他的时间规则保存好，是退款接口重要请求参数 </p>
+<p><strong>支付宝支付</strong> </p>
+<ul>
+<li>沙箱环境回调不起作用，生产环境就没问题（原因未知。可能人品不好，无奈）</li>
+<li>支付宝的蚂蚁金服开发平台提供的文档一般都很详细，足够使用了。如果你确实遇见不能解决的对接问题会有个机器答疑 当然只能回答比较小白的问题。如果确实需要人工帮助，可以持续”骚扰“窗口 后面会弹出专门的技术人员提供帮助（嘚瑟.jpg）get小技能</li>
+</ul>
+<p><strong>微信支付</strong> </p>
+<ul>
+<li>对比支付宝提供的开发文档，微信的无力吐槽。准备对接微信支付的开发人员做好心理准备</li>
+<li>因为业务原因，一个订单可以支持多次支付。出现微信回调支付成功信息延迟返回（延迟达到7分钟之久）导致用户继续支付多笔，导致溢额。目前就微信出现这一种情况。<br>解决方法，只能后期人工对账干预</li>
+</ul>
+<p><strong>建行电子支付</strong></p>
+<ul>
+<li>不提供测试环境（能一把过的大神可以无视我了）对于直连银行支付，技术不是难点，关键就是沟通，对于你懂得的规整制度。。。选择性搭理你。所以建议预留好充足的时间直连对接各大行</li>
+<li>支付的服务器回调地址是在商户管理后台设置的，没有测试环境就意味着上完正式后就不能改了不然影响线上支付。。</li>
+<li>建行的退款。。。</li>
+</ul>
+<p><strong>招商分期支付</strong></p>
+<p>…后面在慢慢补坑</p>
+<h3 id="填坑"><a href="#填坑" class="headerlink" title="填坑"></a>填坑</h3><p>每笔支付的请求参数报文与返回参数报文都要记录下来，很有用处的！！</p>
+
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2017/10/23/支付开发从0到1/" target="_blank" title="支付服务开发从0到1">支付服务开发从0到1</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2017.10.23</li>
+	<li><span>本文链接：</span> <a href="/2017/10/23/支付开发从0到1/" target="_blank" title="支付服务开发从0到1">http://sherryriver.github.io/2017/10/23/支付开发从0到1/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-home">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
+  
+
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Sherryriver - 止不住的音符~">
+<meta property="og:url" content="http://sherryriver.github.io/page/3/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="sherryriver">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+
+  
+  <div class="content-home text-center" style="z-index:10;">
+  <a class="avatar" href="/">
+    <img src="/images/avatar.jpg" alt="" />
+  </a>
+  <h1 class="name" style="font-family: PoiretOne-Regular">
+    sherryriver
+  </h1>
+  <div class="slogan">
+	有朋自</span><span class="city">来 不亦乐乎
+	
+	<!--注意：上面是修改的地方，下面是原代码-->	
+	<!--自律即自由-->
+  </div>
+  <hr>
+  <ul class="text-center nav">
+    
+      <li class="item">
+        
+          <a href="/archives">博客</a>
+        
+        <span>|</span>
+      </li>
+    
+      <li class="item">
+        
+          <a href="https://github.com/sherryriver" target="_blank">Github</a>
+        
+        <span>|</span>
+      </li>
+    
+      <li class="item">
+        
+          <a href="/aboutme" target="_blank">关于</a>
+        
+        <span>|</span>
+      </li>
+    
+  </ul>
+</div>
+<!--<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>-->
+<!--<span class="pv_uv_count" id="busuanzi_container_site_pv">-->
+	<!--本站总pv-->
+	<!--<span id="busuanzi_value_site_pv"></span>-->
+	<!--<br/>-->
+	<!--本站总uv-->
+	<!--<span id="busuanzi_value_site_uv"></span>-->
+<!--</span>-->
+
+<!--首页丝带-->
+<!--<canvas></canvas>-->
+
+<!--烟花-->
+<div id="test" style=" position:fixed;top:0px;z-index:5;"></div>
+
+<script src="../../js/jquery-3.2.1.min.js"></script>
+<script src="../../js/sketch.min.js"></script>
+
+<script src="https://pv.sohu.com/cityjson?ie=utf-8" type="text/javascript"></script>
+<script>
+    console.log(returnCitySN);
+	$(".city2").html(returnCitySN.cname);
+</script>
+
+<script type="text/javascript">
+
+//首页丝带js
+/*document.addEventListener('touchmove', function (e) {
+        e.preventDefault()
+    })
+    var c = document.getElementsByTagName('canvas')[0],
+        x = c.getContext('2d'),
+        //pr = window.devicePixelRatio || 1,
+		pr = 1,
+        w = window.innerWidth,
+        h = window.innerHeight,
+        f = 60,
+        q,
+        m = Math,
+        r = 0,
+        u = m.PI*2,
+        v = m.cos,
+        z = m.random
+    c.width = w*pr
+    c.height = h*pr
+    x.scale(pr, pr)
+    x.globalAlpha = 0.6
+    function i(){
+        x.clearRect(0,0,w,h)
+        q=[{x:0,y:h*.7+f},{x:0,y:h*.7-f}]
+        while(q[1].x<w+f) d(q[0], q[1])
+    }
+    function d(i,j){
+        x.beginPath()
+        x.moveTo(i.x, i.y)
+        x.lineTo(j.x, j.y)
+        var k = j.x + (z()*2-0.25)*f,
+            n = y(j.y)
+        x.lineTo(k, n)
+        x.closePath()
+        r-=u/-50
+        x.fillStyle = '#'+(v(r)*127+128<<16 | v(r+u/3)*127+128<<8 | v(r+u/3*2)*127+128).toString(16)
+        x.fill()
+        q[0] = q[1]
+        q[1] = {x:k,y:n}
+    }
+    function y(p){
+        var t = p + (z()*2-1.1)*f
+        return (t>h||t<0) ? y(p) : t
+    }
+    document.onclick = i
+    document.ontouchstart = i
+    i()*/
+</script>
+
+
+<script>
+	//首页烟花js
+	function Particle(x, y, radius) {
+		this.init(x, y, radius);
+	}
+
+	Particle.prototype = {
+
+		init : function(x, y, radius) {
+
+			this.alive = true;
+
+			this.radius = radius || 10;
+			this.wander = 0.15;
+			this.theta = random(TWO_PI);
+			this.drag = 0.92;
+			this.color = '#fff';
+
+			this.x = x || 0.0;
+			this.y = y || 0.0;
+
+			this.vx = 0.0;
+			this.vy = 0.0;
+		},
+
+		move : function() {
+
+			this.x += this.vx;
+			this.y += this.vy;
+
+			this.vx *= this.drag;
+			this.vy *= this.drag;
+
+			this.theta += random(-0.5, 0.5) * this.wander;
+			this.vx += sin(this.theta) * 0.1;
+			this.vy += cos(this.theta) * 0.1;
+
+			this.radius *= 0.96;
+			this.alive = this.radius > 0.5;
+		},
+
+		draw : function(ctx) {
+
+			ctx.beginPath();
+			ctx.arc(this.x, this.y, this.radius, 0, TWO_PI);
+			ctx.fillStyle = this.color;
+			ctx.fill();
+		}
+	};
+
+	var MAX_PARTICLES = 280;
+	var COLOURS = [ '#69D2E7', '#A7DBD8', '#E0E4CC', '#F38630', '#FA6900',
+			'#FF4E50', '#F9D423' ];
+
+	var particles = [];
+	var pool = [];
+
+	var demo = Sketch.create({
+		container : document.getElementById('test')
+	});
+
+	demo.setup = function() {
+
+		// Set off some initial particles.
+		var i, x, y;
+
+		//  for ( i = 0; i < 20; i++ ) {
+		x = (demo.width * 0.5) + random(-100, 100);
+		y = (demo.height * 0.5) + random(-100, 100);
+		demo.spawn(0, 999);
+		// }
+	};
+
+	demo.spawn = function(x, y) {
+
+		if (particles.length >= MAX_PARTICLES)
+			pool.push(particles.shift());
+
+		particle = pool.length ? pool.pop() : new Particle();
+		particle.init(x, y, random(5, 40));
+
+		particle.wander = random(0.5, 2.0);
+		particle.color = random(COLOURS);
+		particle.drag = random(0.9, 0.99);
+
+		theta = random(TWO_PI);
+		force = random(2, 8);
+
+		particle.vx = sin(theta) * force;
+		particle.vy = cos(theta) * force;
+
+		particles.push(particle);
+	};
+
+	demo.update = function() {
+
+		var i, particle;
+
+		for (i = particles.length - 1; i >= 0; i--) {
+
+			particle = particles[i];
+
+			if (particle.alive)
+				particle.move();
+			else
+				pool.push(particles.splice(i, 1)[0]);
+		}
+	};
+
+	demo.draw = function() {
+
+		demo.globalCompositeOperation = 'lighter';
+
+		for ( var i = particles.length - 1; i >= 0; i--) {
+			particles[i].draw(demo);
+		}
+	};
+
+	demo.mousemove = function() {
+
+		var particle, theta, force, touch, max, i, j, n;
+
+		for (i = 0, n = demo.touches.length; i < n; i++) {
+
+			touch = demo.touches[i], max = random(1, 4);
+			for (j = 0; j < max; j++) {
+				demo.spawn(touch.x, touch.y);
+			}
+
+		}
+	};
+</script>
+
+<style>
+.pv_uv_count{
+color:white;
+}
+</style>
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

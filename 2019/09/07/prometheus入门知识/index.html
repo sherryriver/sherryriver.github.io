@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>prometheus知识 | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
+  
+
+  <meta name="description" content="Prometheus 一款时序型数据库，谷歌开发的一个开源监控软件。 与Nagios、Zabbix、Ganglia、Open-Falcon等很多监控系统相比，Prometheus最主要的特色有4个：  通过PromQL实现多维度数据模型的灵活查询。 定义了开放指标数据的标准，自定义探针（如Exporter等），编写简单方便。 PushGateway组件让这款监控系统可以接收监控数据。 提供了VM和">
+<meta property="og:type" content="article">
+<meta property="og:title" content="prometheus知识">
+<meta property="og:url" content="http://sherryriver.github.io/2019/09/07/prometheus%E5%85%A5%E9%97%A8%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="Prometheus 一款时序型数据库，谷歌开发的一个开源监控软件。 与Nagios、Zabbix、Ganglia、Open-Falcon等很多监控系统相比，Prometheus最主要的特色有4个：  通过PromQL实现多维度数据模型的灵活查询。 定义了开放指标数据的标准，自定义探针（如Exporter等），编写简单方便。 PushGateway组件让这款监控系统可以接收监控数据。 提供了VM和">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-09-07T05:51:50.000Z">
+<meta property="article:modified_time" content="2020-12-15T08:20:45.389Z">
+<meta property="article:author" content="sherryriver">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-prometheus入门知识" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">prometheus知识</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2019.09.07</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6%E6%8A%80%E6%9C%AF/">流水账技术</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>Prometheus 一款时序型数据库，谷歌开发的一个开源监控软件。</p>
+<p>与Nagios、Zabbix、Ganglia、Open-Falcon等很多监控系统相比，Prometheus最主要的特色有4个：</p>
+<ul>
+<li>通过PromQL实现多维度数据模型的灵活查询。</li>
+<li>定义了开放指标数据的标准，自定义探针（如Exporter等），编写简单方便。</li>
+<li>PushGateway组件让这款监控系统可以接收监控数据。</li>
+<li>提供了VM和容器化的版本。</li>
+</ul>
+<p>尤其是第一点，这是很多监控系统望尘莫及的。多维度的数据模型和灵活的查询方式，使监控指标可以关联到多个标签，并对时间序列进行切片和切块，以支持各种图形、表格和告警场景。</p>
+<p>除了上述4种特色之外，Prometheus还有如下特点：</p>
+<ul>
+<li>Go语言编写，拥抱云原生。</li>
+<li>采用拉模式为主、推模式为辅的方式采集数据。</li>
+<li>二进制文件直接启动，也支持容器化部署镜像。</li>
+<li>支持多种语言的客户端，如Java、JMX、Python、Go、Ruby、.NET、Node.js等语言。</li>
+<li>支持本地和第三方远程存储，单机性能强劲，可以处理上千target及每秒百万级时间序列。</li>
+<li>高效的存储。平均一个采样数据占3.5B左右，共320万个时间序列，每30秒采样一次，如此持续运行60天，占用磁盘空间大约为228GB（有一定富余量，部分要占磁盘空间的项目未在这里列出）。</li>
+<li>可扩展。可以在每个数据中心或由每个团队运行独立Prometheus Server。也可以使用联邦集群让多个Prometheus实例产生一个逻辑集群，当单实例Prometheus Server处理的任务量过大时，通过使用功能分区（sharding）+联邦集群（federation）对其进行扩展。</li>
+<li>出色的可视化功能。Prometheus拥有多种可视化的模式，比如内置表达式浏览器、Grafana集成和控制台模板语言。它还提供了HTTP查询接口，方便结合其他GUI组件或者脚本展示数据。</li>
+<li>精确告警。Prometheus基于灵活的PromQL语句可以进行告警设置、预测等，另外它还提供了分组、抑制、静默等功能防止告警风暴。</li>
+<li>支持静态文件配置和动态发现等自动发现机制，目前已经支持了Kubernetes、etcd、Consul等多种服务发现机制，这样可以大大减少容器发布过程中手动配置的工作量。</li>
+<li>开放性。Prometheus的client library的输出格式不仅支持Prometheus的格式化数据，还可以在不使用Prometheus的情况下输出支持其他监控系统（比如Graphite）的格式化数据。</li>
+</ul>
+<p>Prometheus也存在一些局限性，主要包括如下方面：</p>
+<ul>
+<li>Prometheus主要针对性能和可用性监控，不适用于针对日志（Log）、事件（Event）、调用链（Tracing）等的监控。</li>
+<li>Prometheus关注的是近期发生的事情，而不是跟踪数周或数月的数据。因为大多数监控查询及告警都针对的是最近（通常不到一天）的数据。Prometheus认为最有用的数据是最近的数据，监控数据默认保留15天。</li>
+<li>本地存储有限，存储大量的历史数据需要对接第三方远程存储。</li>
+<li>采用联邦集群的方式，并没有提供统一的全局视图。</li>
+<li>Prometheus的监控数据并没有对单位进行定义。</li>
+<li>Prometheus对数据的统计无法做到100%准确，如订单、支付、计量计费等精确数据监控场景。</li>
+<li>Prometheus默认是拉模型，建议合理规划网络，尽量不要转发。</li>
+</ul>
+<p>Prometheus主要由Prometheus Server、Pushgateway、Job/Exporter、Service Discovery、Alertmanager、Dashboard这6个核心模块构成。Prometheus通过服务发现机制发现target，这些目标可以是长时间执行的Job，也可以是短时间执行的Job，还可以是通过Exporter监控的第三方应用程序。被抓取的数据会存储起来，通过PromQL语句在仪表盘等可视化系统中供查询，或者向Alertmanager发送告警信息，告警会通过页面、电子邮件、钉钉信息或者其他形式呈现。</p>
+
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2019/09/07/prometheus入门知识/" target="_blank" title="prometheus知识">prometheus知识</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2019.09.07</li>
+	<li><span>本文链接：</span> <a href="/2019/09/07/prometheus入门知识/" target="_blank" title="prometheus知识">http://sherryriver.github.io/2019/09/07/prometheus入门知识/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

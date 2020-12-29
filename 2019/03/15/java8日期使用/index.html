@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>java8日期使用 | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
+  
+
+  <meta name="description" content="好吧，Java8已经出来这么久了但是在处理日期时间上还是主要使用3个类，Date、SimpleDateFormat和Calendar。 但是SimpleDateFormat不是线程安全的，Date和Calendar获取到的月份是0到11，而不是现实生活中的1到12，很容易犯错。所以篇讲解下JDK8推出的日期时间类。  Instant获取当前时间 Instant instant &#x3D; Ins">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java8日期使用">
+<meta property="og:url" content="http://sherryriver.github.io/2019/03/15/java8%E6%97%A5%E6%9C%9F%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="好吧，Java8已经出来这么久了但是在处理日期时间上还是主要使用3个类，Date、SimpleDateFormat和Calendar。 但是SimpleDateFormat不是线程安全的，Date和Calendar获取到的月份是0到11，而不是现实生活中的1到12，很容易犯错。所以篇讲解下JDK8推出的日期时间类。  Instant获取当前时间 Instant instant &#x3D; Ins">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-03-15T07:29:08.000Z">
+<meta property="article:modified_time" content="2020-12-15T07:50:26.677Z">
+<meta property="article:author" content="sherryriver">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Instant"><span class="toc-text">Instant</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LocalDate"><span class="toc-text">LocalDate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LocalTime"><span class="toc-text">LocalTime</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LocalDateTime"><span class="toc-text">LocalDateTime</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DateTimeFormatter"><span class="toc-text">DateTimeFormatter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2"><span class="toc-text">类型相互转换</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-java8日期使用" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">java8日期使用</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2019.03.15</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6%E6%8A%80%E6%9C%AF/">流水账技术</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>好吧，Java8已经出来这么久了但是在处理日期时间上还是主要使用3个类，<code>Date</code>、<code>SimpleDateFormat</code>和<code>Calendar</code>。</p>
+<p>但是<code>SimpleDateFormat</code>不是线程安全的，<code>Date</code>和<code>Calendar</code>获取到的月份是0到11，而不是现实生活中的1到12，很容易犯错。所以篇讲解下JDK8推出的日期时间类。</p>
+<ol>
+<li><h3 id="Instant"><a href="#Instant" class="headerlink" title="Instant"></a>Instant</h3><p>获取当前时间</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Instant instant &#x3D; Instant.now(); </span><br><span class="line"></span><br><span class="line">System.out.println(instant);</span><br></pre></td></tr></table></figure>
+
+<p>如果要输出北京时间则需要加上默认事件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(instant.atZone(ZoneId.systemDefault()));</span><br></pre></td></tr></table></figure>
+
+<p>将String转换为Instant</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String text &#x3D; &quot;2018-06-10T08:46:55.967Z&quot;; Instant parseInstant &#x3D; Instant.parse(text); System.out.println(&quot;秒时间戳:&quot; + parseInstant.getEpochSecond()); System.out.println(&quot;豪秒时间戳:&quot; + parseInstant.toEpochMilli()); System.out.println(&quot;纳秒:&quot; + parseInstant.getNano());</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="2">
+<li><h3 id="LocalDate"><a href="#LocalDate" class="headerlink" title="LocalDate"></a>LocalDate</h3><p>获取当前日期</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LocalDate today &#x3D; LocalDate.now(); System.out.println(&quot;today: &quot; + today);</span><br><span class="line"></span><br><span class="line">输出结果</span><br><span class="line">today: 2019-03-15</span><br></pre></td></tr></table></figure>
+
+<p>获取年月日</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LocalDate today &#x3D; LocalDate.now(); </span><br><span class="line">int year &#x3D; today.getYear(); </span><br><span class="line">int month &#x3D; today.getMonthValue(); </span><br><span class="line">int day &#x3D; today.getDayOfMonth();</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="3">
+<li><h3 id="LocalTime"><a href="#LocalTime" class="headerlink" title="LocalTime"></a>LocalTime</h3><p>获取时分秒</p>
+</li>
+</ol>
+<ol start="4">
+<li><h3 id="LocalDateTime"><a href="#LocalDateTime" class="headerlink" title="LocalDateTime"></a>LocalDateTime</h3><p>获取当前时间、年月时分秒</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LocalDateTime localDateTime &#x3D; LocalDateTime.now(); System.out.println(&quot;localDateTime:&quot; + localDateTime);</span><br><span class="line"></span><br><span class="line">System.out.println(&quot;year: &quot; + localDateTime.getYear());</span><br><span class="line">System.out.println(&quot;month: &quot; + localDateTime.getMonthValue());</span><br><span class="line">System.out.println(&quot;day: &quot; + localDateTime.getDayOfMonth());</span><br><span class="line">System.out.println(&quot;hour: &quot; + localDateTime.getHour());</span><br><span class="line">System.out.println(&quot;minute: &quot; + localDateTime.getMinute());</span><br><span class="line">System.out.println(&quot;second: &quot; + localDateTime.getSecond());</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>增加/减少天数/小时</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LocalDateTime localDateTime &#x3D; LocalDateTime.now(); System.out.println(&quot;localDateTime: &quot; + localDateTime); LocalDateTime tomorrow &#x3D; localDateTime.plusDays(1); System.out.println(&quot;tomorrow: &quot; + tomorrow); LocalDateTime nextHour &#x3D; localDateTime.plusHours(1); System.out.println(&quot;nextHour: &quot; + nextHour);</span><br><span class="line">LocalDateTime yesterday &#x3D; localDateTime.minusDays(1);</span><br><span class="line">System.out.println(&quot;yesterday: &quot; + yesterday);</span><br><span class="line"></span><br><span class="line">LocalDateTime lastHour &#x3D; localDateTime.minusHours(1);</span><br><span class="line">System.out.println(&quot;lastHour: &quot; + lastHour);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="5">
+<li><h3 id="DateTimeFormatter"><a href="#DateTimeFormatter" class="headerlink" title="DateTimeFormatter"></a>DateTimeFormatter</h3><p>格式化日期</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LocalDate localDate &#x3D; LocalDate.now(); System.out.println(&quot;yyyy&#x2F;MM&#x2F;dd: &quot; + localDate.format(DateTimeFormatter.ofPattern(&quot;yyyy&#x2F;MM&#x2F;dd&quot;)));</span><br><span class="line">输出结果：yyyy&#x2F;MM&#x2F;dd: 2020&#x2F;06&#x2F;11</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">LocalDateTime localDateTime &#x3D; LocalDateTime.now();</span><br><span class="line">System.out.println(localDateTime);</span><br><span class="line">System.out.println(&quot;ISO_DATE_TIME: &quot; + localDateTime.format(DateTimeFormatter.ISO_DATE_TIME));</span><br><span class="line">System.out.println(&quot;ISO_DATE: &quot; + localDateTime.format(DateTimeFormatter.ISO_DATE));</span><br></pre></td></tr></table></figure>
+</li>
+<li><h3 id="类型相互转换"><a href="#类型相互转换" class="headerlink" title="类型相互转换"></a>类型相互转换</h3><p>Instant转Date</p>
+<p>Date转Instant</p>
+<p>Date转LocalDateTime</p>
+</li>
+</ol>
+<p>推荐使用<code>Instant</code>代替<code>Date</code>，<code>LocalDateTime</code> 代替 <code>Calendar</code>，<code>DateTimeFormatter</code> 代替 <code>SimpleDateFormat</code></p>
+
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2019/03/15/java8日期使用/" target="_blank" title="java8日期使用">java8日期使用</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2019.03.15</li>
+	<li><span>本文链接：</span> <a href="/2019/03/15/java8日期使用/" target="_blank" title="java8日期使用">http://sherryriver.github.io/2019/03/15/java8日期使用/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>rabbitmq阻塞异常排查 | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
+  
+
+  <meta name="description" content="测试环境反馈行云系统上所有的消息队列都不消费了，看了一下Connections连接，发现全部都发生阻塞了，导致线上的队列堆积。 还好只是测试环境，开始不紧不慢开始排查问题，（这里提一句，如果是线上环境优先恢复生产然后再排查问题） 经检查生产者和消费者都良好，这就纳闷了，难道是MQ机器的问题？拉上了运维老大哥一起排查。 拉mq日志&#x2F;var &#x2F;log&#x2F;rabbitmq&#x2F; 通过错误日志发现 vm_mem">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rabbitmq阻塞异常排查">
+<meta property="og:url" content="http://sherryriver.github.io/2019/08/16/rabbitmq%E9%98%BB%E5%A1%9E%E5%BC%82%E5%B8%B8%E6%8E%92%E6%9F%A5/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="测试环境反馈行云系统上所有的消息队列都不消费了，看了一下Connections连接，发现全部都发生阻塞了，导致线上的队列堆积。 还好只是测试环境，开始不紧不慢开始排查问题，（这里提一句，如果是线上环境优先恢复生产然后再排查问题） 经检查生产者和消费者都良好，这就纳闷了，难道是MQ机器的问题？拉上了运维老大哥一起排查。 拉mq日志&#x2F;var &#x2F;log&#x2F;rabbitmq&#x2F; 通过错误日志发现 vm_mem">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-16T07:39:21.000Z">
+<meta property="article:modified_time" content="2020-12-16T07:51:47.413Z">
+<meta property="article:author" content="sherryriver">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-rabbitmq阻塞异常排查" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">rabbitmq阻塞异常排查</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2019.08.16</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6%E6%8A%80%E6%9C%AF/">流水账技术</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>测试环境反馈行云系统上所有的消息队列都不消费了，看了一下Connections连接，发现全部都发生阻塞了，导致线上的队列堆积。</p>
+<p>还好只是测试环境，开始不紧不慢开始排查问题，（这里提一句，如果是线上环境优先恢复生产然后再排查问题）</p>
+<p>经检查生产者和消费者都良好，这就纳闷了，难道是MQ机器的问题？拉上了运维老大哥一起排查。</p>
+<p>拉mq日志/var /log/rabbitmq/ 通过错误日志发现</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vm_memory_high_watermark clear. Memory used:383597048 allowed:385616281</span><br><span class="line">memory resource limit alarm cleared on node rabbit@VM_2_12_centos</span><br></pre></td></tr></table></figure>
+
+<p>好了，mq的运行内存超过限制导致出现的问题</p>
+<p>这时候借助万能的搜索引擎了，上网翻资料</p>
+<p>因为RabbitMQ服务器在启动时会计算系统内存总大小。然后会根据vm_memory_high_watermark参数指定的百分比，进行控制.可通过命令 rabbitmqctl set_vm_memory_high_watermark fraction 动态设置。默认下，vm_memory_high_watermark的值为0.4,当RabbitMQ使用的内存超过40%时，系统会阻塞所有连接。一旦警报解除（消息被消费者取走，或者消息被写到硬盘中）,系统重新恢复工作。32位系统的单进程内存使用最大为2G,即使系统有10G,那么内存警报线为2G*40%.</p>
+<p>解决方法</p>
+<p>将<strong>vm_memory_high_watermark</strong>值上调</p>
+
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2019/08/16/rabbitmq阻塞异常排查/" target="_blank" title="rabbitmq阻塞异常排查">rabbitmq阻塞异常排查</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2019.08.16</li>
+	<li><span>本文链接：</span> <a href="/2019/08/16/rabbitmq阻塞异常排查/" target="_blank" title="rabbitmq阻塞异常排查">http://sherryriver.github.io/2019/08/16/rabbitmq阻塞异常排查/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
