@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>再记一次sql优化 | Sherryriver - 止不住的音符~</title>
+  <title>rabbitmq与kafka对比 | Sherryriver - 止不住的音符~</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -15,15 +15,15 @@
     <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
   
 
-  <meta name="description" content="线上环境爆出一个慢查询，监控发现，查询时服务器IO飙升，IO占用率达到100%， 执行时间长达8-9s左右。 大概sql如下 SELECT DISTINCT g.*, A.name AS cp_name, B.name AS category_name, C.name AS type_name FROM G g LEFT JOIN A  ON A.id &#x3D; g.cp_id AND A.delete">
+  <meta name="description" content="多方面资料整理而来 rabbmq基于erlang语言开发，并发能力强，性能好 延迟低。功能比较完备而且开 源提供的管理界面非常棒。但是在吞吐量不及kafka。 kafka优势就是高吞吐，功能较为简单，主要支持简单的 MQ功能，在大数据领域的实时计算以及日志采集被大规模使用。唯一劣势就是有可能消息重复消费，对数据的准确性造成影响。 调研了公司的各项目的mq选择，选取rabbitmq与kafka 设计">
 <meta property="og:type" content="article">
-<meta property="og:title" content="再记一次sql优化">
-<meta property="og:url" content="https://sherryriver.github.io/2018/11/16/%E5%86%8D%E8%AE%B0%E4%B8%80%E6%AC%A1sql%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:title" content="rabbitmq与kafka对比">
+<meta property="og:url" content="https://sherryriver.github.io/2019/03/25/rabbitmq%E4%B8%8Ekafka%E5%AF%B9%E6%AF%94/index.html">
 <meta property="og:site_name" content="Sherryriver - 止不住的音符~">
-<meta property="og:description" content="线上环境爆出一个慢查询，监控发现，查询时服务器IO飙升，IO占用率达到100%， 执行时间长达8-9s左右。 大概sql如下 SELECT DISTINCT g.*, A.name AS cp_name, B.name AS category_name, C.name AS type_name FROM G g LEFT JOIN A  ON A.id &#x3D; g.cp_id AND A.delete">
+<meta property="og:description" content="多方面资料整理而来 rabbmq基于erlang语言开发，并发能力强，性能好 延迟低。功能比较完备而且开 源提供的管理界面非常棒。但是在吞吐量不及kafka。 kafka优势就是高吞吐，功能较为简单，主要支持简单的 MQ功能，在大数据领域的实时计算以及日志采集被大规模使用。唯一劣势就是有可能消息重复消费，对数据的准确性造成影响。 调研了公司的各项目的mq选择，选取rabbitmq与kafka 设计">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2018-11-16T07:11:39.000Z">
-<meta property="article:modified_time" content="2021-01-16T11:51:43.650Z">
+<meta property="article:published_time" content="2019-03-25T01:48:24.000Z">
+<meta property="article:modified_time" content="2021-01-17T02:41:50.947Z">
 <meta property="article:author" content="sherryriver">
 <meta name="twitter:card" content="summary">
 
@@ -140,14 +140,14 @@
 
 
 <div class="content content-post LEFT">
-   <article id="post-再记一次sql优化" class="article article-type-post" itemprop="blogPost">
+   <article id="post-rabbitmq与kafka对比" class="article article-type-post" itemprop="blogPost">
   <header class="article-header">
-    <h1 class="post-title">再记一次sql优化</h1>
+    <h1 class="post-title">rabbitmq与kafka对比</h1>
 
     <div class="article-meta">
       <span>
         <i class="icon-calendar"></i>
-        <span>2018.11.16</span>
+        <span>2019.03.25</span>
       </span>
 
       
@@ -181,45 +181,23 @@
 
   <div class="article-content">
     
-      <p>线上环境爆出一个慢查询，监控发现，查询时服务器IO飙升，IO占用率达到100%， 执行时间长达8-9s左右。</p>
-<p>大概sql如下</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> g.*, A.name <span class="keyword">AS</span> cp_name, B.name <span class="keyword">AS</span> category_name, C.name <span class="keyword">AS</span> type_name <span class="keyword">FROM</span> G g </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> A  <span class="keyword">ON</span> A.id = g.cp_id <span class="keyword">AND</span> A.deleted = <span class="number">0</span> </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> B <span class="keyword">ON</span> c.id = g.category_id <span class="keyword">AND</span> B.deleted = <span class="number">0</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> C t <span class="keyword">ON</span> t.id = g.type_id <span class="keyword">AND</span> C.deleted = <span class="number">0</span> <span class="keyword">WHERE</span> g.deleted = <span class="number">0</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> g.modify_time <span class="keyword">DESC</span> <span class="keyword">LIMIT</span> <span class="number">10</span> ;</span><br></pre></td></tr></table></figure>
-
-<p>然后使用explain查看执行计划，Extra列看到Using temporary。</p>
-<p>问题还是比较明显的，查询了大量数据，然后使用临时表order by，但最终又只返回了10条数据。</p>
-<p>然后dba观察到的IO高，是因为sql语句生成了一个巨大的临时表，内存放不下，于是全部拷贝到磁盘，导致IO飙升。</p>
-<p>这样问题清晰了起来。</p>
-<p>解决方法：</p>
-<p>拆分sql，将排序操作和查询所有信息的操作分开</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;查询符合条件的数据，只需要查询g.id即可</span><br><span class="line">SELECT DISTINCT g.id .....(省略关联表)  ORDER BY g.modify_time DESC LIMIT 10 ;</span><br><span class="line">&#x2F;&#x2F;查询符合条件的详细数据，将第一条sql的结果使用in操作拼接到第二条的sql</span><br><span class="line">SELECT DISTINCT g.* ...(省略) WHERE g.deleted &#x3D; 0 and g.id in(…………………) ORDER BY g.modify_time DESC ;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-<p>经过测试优化前大约需要7s，优化后第一条0.3s，第二条0.1s，IO从100%降到不到1%</p>
-<p>后续：（查略资料）</p>
-<p>mysql在执行SQL查询时可能会用到临时表，一般情况下，用到临时表就意味着性能较低。</p>
-<p><strong>临时表存储</strong></p>
-<p>MySQL临时表分为“内存临时表”和“磁盘临时表”，其中内存临时表使用MySQL的MEMORY存储引擎，磁盘临时表使用MySQL的MyISAM存储引擎；</p>
-<p>一般情况下，MySQL会先创建内存临时表，但内存临时表超过配置指定的值后，MySQL会将内存临时表导出到磁盘临时表；</p>
-<p><strong>使用临时表的场景</strong></p>
-<ol>
-<li>ORDER BY子句和GROUP BY子句不同， 例如：ORDERY BY price GROUP BY name；</li>
-<li>在JOIN查询中，ORDER BY或者GROUP BY使用了不是第一个表的列 例如：SELECT * from TableA, TableB ORDER BY TableA.price GROUP by TableB.name</li>
-<li>ORDER BY中使用了DISTINCT关键字 ORDERY BY DISTINCT(price)</li>
-<li>SELECT语句中指定了SQL_SMALL_RESULT关键字 SQL_SMALL_RESULT的意思就是告诉MySQL，结果会很小，请直接使用内存临时表，不需要使用索引排序 SQL_SMALL_RESULT必须和GROUP BY、DISTINCT或DISTINCTROW一起使用 一般情况下，我们没有必要使用这个选项，让MySQL服务器选择即可。</li>
-</ol>
-<p><strong>直接使用磁盘临时表的场景</strong></p>
-<ol>
-<li>表包含TEXT或者BLOB列；</li>
-<li>GROUP BY 或者 DISTINCT 子句中包含长度大于512字节的列；</li>
-<li>使用UNION或者UNION ALL时，SELECT子句中包含大于512字节的列；</li>
-</ol>
-<p><strong>临时表相关配置</strong></p>
-<p>tmp_table_size：指定系统创建的内存临时表最大大小；</p>
-<p>max_heap_table_size: 指定用户创建的内存表的最大大小；</p>
-<p>常见的避免临时表的方法有：</p>
-<p>1、在ORDER BY或者GROUP BY的列上创建索引；</p>
-<p>2、TEXT、大于512字节的字符串，基本上都是为了显示信息，而不会用于查询条件， 因此表设计的时候，应该将这些列独立到另外一张表。</p>
+      <p>多方面资料整理而来</p>
+<p>rabbmq基于erlang语言开发，并发能力强，性能好 延迟低。功能比较完备而且开 源提供的管理界面非常棒。但是在吞吐量不及kafka。 kafka优势就是高吞吐，功能较为简单，主要支持简单的 MQ功能，在大数据领域的实时计算以及日志采集被大规模使用。唯一劣势就是有可能消息重复消费，对数据的准确性造成影响。</p>
+<p>调研了公司的各项目的mq选择，选取rabbitmq与kafka</p>
+<p>设计语言的区别： RabbitMQ是采用Erlang语言实现的消息中间件 kafka是采用Scala语言开发高吞吐量的分布式发布订阅消息系统</p>
+<p><strong>需要的功能各个维度来做对比：</strong></p>
+<p>优先级队列（优先级高的消息具备优先被消费的特权）</p>
+<p>延迟队列（延迟消费）</p>
+<p>消费模式（消息的推模式和拉模式，推模式是指由Broker主动推送消息至消费端。拉模式是指消费端主动向Broker端请求拉取）</p>
+<p>消息回溯（指消息在消费完成之后，还能消费到之前被消费掉的消息）</p>
+<p>持久化</p>
+<p>消息追踪（知道消息从哪来，存在哪里以及发往哪里去）</p>
+<p>多租户（确保各用户间数据的隔离性）</p>
+<p>跨语言支持</p>
+<p>安全机制（身份认证和权限控制）</p>
+<p>消息确认</p>
+<p>Kafka不支持优先级队列，不支持延迟队列。只有拉模式，支持消息回溯（按照offset和timestamp两种维度进行消息回溯。），支持持久化不支持消息追踪，支持多租户，跨语言支持，支持安全机制，支持消息确认。</p>
+<p>rabbitmq支持优先级队列，支持延迟队列（通过DLX与TTL 实现延迟队列的功能。）。推模式+拉模式，不支持消息回溯，，支持持久化，支持消息追踪（插件实现），支持多租户，跨语言支持，支持安全机制，支持消息确认</p>
 
     
 	
@@ -229,10 +207,10 @@
 <br>
 <hr>
 <ul class="copyright">
-	<li><span>本文标题：</span> <a href="/2018/11/16/再记一次sql优化/" target="_blank" title="再记一次sql优化">再记一次sql优化</a></li>
+	<li><span>本文标题：</span> <a href="/2019/03/25/rabbitmq与kafka对比/" target="_blank" title="rabbitmq与kafka对比">rabbitmq与kafka对比</a></li>
 	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
-	<li><span>发布时间：</span> 2018.11.16</li>
-	<li><span>本文链接：</span> <a href="/2018/11/16/再记一次sql优化/" target="_blank" title="再记一次sql优化">https://sherryriver.github.io/2018/11/16/再记一次sql优化/</a></li>
+	<li><span>发布时间：</span> 2019.03.25</li>
+	<li><span>本文链接：</span> <a href="/2019/03/25/rabbitmq与kafka对比/" target="_blank" title="rabbitmq与kafka对比">https://sherryriver.github.io/2019/03/25/rabbitmq与kafka对比/</a></li>
 	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
 </ul>
 

@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>再记一次sql优化 | Sherryriver - 止不住的音符~</title>
+  <title>redis的incr操作遇到的异常 | Sherryriver - 止不住的音符~</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -15,15 +15,15 @@
     <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
   
 
-  <meta name="description" content="线上环境爆出一个慢查询，监控发现，查询时服务器IO飙升，IO占用率达到100%， 执行时间长达8-9s左右。 大概sql如下 SELECT DISTINCT g.*, A.name AS cp_name, B.name AS category_name, C.name AS type_name FROM G g LEFT JOIN A  ON A.id &#x3D; g.cp_id AND A.delete">
+  <meta name="description" content="2个独立的项目，一个springboot搭建的项目 redis的incr操作，另一个spring搭建的项目redis的get操作，对同一个redis进去操作。 现有一个incr的key , 当调用incr后返回值一切正常， 当对此key进行get调用的时候出现了如下的异常 Cannot deserialize  起初以为是get查询序列化的原因。 默认采用的序列化策略有两种，一种是String的序">
 <meta property="og:type" content="article">
-<meta property="og:title" content="再记一次sql优化">
-<meta property="og:url" content="https://sherryriver.github.io/2018/11/16/%E5%86%8D%E8%AE%B0%E4%B8%80%E6%AC%A1sql%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:title" content="redis的incr操作遇到的异常">
+<meta property="og:url" content="https://sherryriver.github.io/2019/04/16/redis%E7%9A%84incr%E6%93%8D%E4%BD%9C%E9%81%87%E5%88%B0%E7%9A%84%E5%BC%82%E5%B8%B8/index.html">
 <meta property="og:site_name" content="Sherryriver - 止不住的音符~">
-<meta property="og:description" content="线上环境爆出一个慢查询，监控发现，查询时服务器IO飙升，IO占用率达到100%， 执行时间长达8-9s左右。 大概sql如下 SELECT DISTINCT g.*, A.name AS cp_name, B.name AS category_name, C.name AS type_name FROM G g LEFT JOIN A  ON A.id &#x3D; g.cp_id AND A.delete">
+<meta property="og:description" content="2个独立的项目，一个springboot搭建的项目 redis的incr操作，另一个spring搭建的项目redis的get操作，对同一个redis进去操作。 现有一个incr的key , 当调用incr后返回值一切正常， 当对此key进行get调用的时候出现了如下的异常 Cannot deserialize  起初以为是get查询序列化的原因。 默认采用的序列化策略有两种，一种是String的序">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2018-11-16T07:11:39.000Z">
-<meta property="article:modified_time" content="2021-01-16T11:51:43.650Z">
+<meta property="article:published_time" content="2019-04-16T11:38:20.000Z">
+<meta property="article:modified_time" content="2021-01-16T11:40:10.309Z">
 <meta property="article:author" content="sherryriver">
 <meta name="twitter:card" content="summary">
 
@@ -140,14 +140,14 @@
 
 
 <div class="content content-post LEFT">
-   <article id="post-再记一次sql优化" class="article article-type-post" itemprop="blogPost">
+   <article id="post-redis的incr操作遇到的异常" class="article article-type-post" itemprop="blogPost">
   <header class="article-header">
-    <h1 class="post-title">再记一次sql优化</h1>
+    <h1 class="post-title">redis的incr操作遇到的异常</h1>
 
     <div class="article-meta">
       <span>
         <i class="icon-calendar"></i>
-        <span>2018.11.16</span>
+        <span>2019.04.16</span>
       </span>
 
       
@@ -181,45 +181,23 @@
 
   <div class="article-content">
     
-      <p>线上环境爆出一个慢查询，监控发现，查询时服务器IO飙升，IO占用率达到100%， 执行时间长达8-9s左右。</p>
-<p>大概sql如下</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> g.*, A.name <span class="keyword">AS</span> cp_name, B.name <span class="keyword">AS</span> category_name, C.name <span class="keyword">AS</span> type_name <span class="keyword">FROM</span> G g </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> A  <span class="keyword">ON</span> A.id = g.cp_id <span class="keyword">AND</span> A.deleted = <span class="number">0</span> </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> B <span class="keyword">ON</span> c.id = g.category_id <span class="keyword">AND</span> B.deleted = <span class="number">0</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> C t <span class="keyword">ON</span> t.id = g.type_id <span class="keyword">AND</span> C.deleted = <span class="number">0</span> <span class="keyword">WHERE</span> g.deleted = <span class="number">0</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> g.modify_time <span class="keyword">DESC</span> <span class="keyword">LIMIT</span> <span class="number">10</span> ;</span><br></pre></td></tr></table></figure>
+      <p>2个独立的项目，一个springboot搭建的项目 redis的incr操作，另一个spring搭建的项目redis的get操作，对同一个redis进去操作。</p>
+<p>现有一个incr的key , 当调用incr后返回值一切正常， 当对此key进行get调用的时候出现了如下的异常</p>
+<p>Cannot deserialize </p>
+<p>起初以为是get查询序列化的原因。</p>
+<p>默认采用的序列化策略有两种，一种是String的序列化策略，一种是JDK的序列化策略</p>
+<p>redis中StringRedisTemplate默认采用的是String的序列化策略，保存的key和value都是采用此策略序列化保存的。而RedisTemplate默认采用的是JDK的序列化策略，保存的key和value都是采用此策略序列化保存的。</p>
+<p>就是因为序列化策略的不同，即使是同一个key用不同的Template去序列化，结果是不同的。所以根据key去删除数据的时候就出现了删除失败的问题</p>
+<p>当时以为问题出在此，spring的项目历史久远，改动的是springboot项目的redis配置。配置一致后发现问题依旧，就很纳闷了，，后面网上查阅资料才知道</p>
+<p>incr后得到 值不会出错是没有经过redistemplate的deserialize, 而get必须经过 所以只要设置redistemplate的ValueSerializer即可</p>
+<p>当值采用Jdk序列化操作后，使用get获取失败。这是redis的一个bug</p>
+<p>有两种解决办法。</p>
+<p>第一，采用StringRedisSerializer序列化其值。 </p>
+<p>配置中添加</p>
+<property name="valueSerializer" ref="stringRedisSerializer"/>
 
-<p>然后使用explain查看执行计划，Extra列看到Using temporary。</p>
-<p>问题还是比较明显的，查询了大量数据，然后使用临时表order by，但最终又只返回了10条数据。</p>
-<p>然后dba观察到的IO高，是因为sql语句生成了一个巨大的临时表，内存放不下，于是全部拷贝到磁盘，导致IO飙升。</p>
-<p>这样问题清晰了起来。</p>
-<p>解决方法：</p>
-<p>拆分sql，将排序操作和查询所有信息的操作分开</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;查询符合条件的数据，只需要查询g.id即可</span><br><span class="line">SELECT DISTINCT g.id .....(省略关联表)  ORDER BY g.modify_time DESC LIMIT 10 ;</span><br><span class="line">&#x2F;&#x2F;查询符合条件的详细数据，将第一条sql的结果使用in操作拼接到第二条的sql</span><br><span class="line">SELECT DISTINCT g.* ...(省略) WHERE g.deleted &#x3D; 0 and g.id in(…………………) ORDER BY g.modify_time DESC ;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-<p>经过测试优化前大约需要7s，优化后第一条0.3s，第二条0.1s，IO从100%降到不到1%</p>
-<p>后续：（查略资料）</p>
-<p>mysql在执行SQL查询时可能会用到临时表，一般情况下，用到临时表就意味着性能较低。</p>
-<p><strong>临时表存储</strong></p>
-<p>MySQL临时表分为“内存临时表”和“磁盘临时表”，其中内存临时表使用MySQL的MEMORY存储引擎，磁盘临时表使用MySQL的MyISAM存储引擎；</p>
-<p>一般情况下，MySQL会先创建内存临时表，但内存临时表超过配置指定的值后，MySQL会将内存临时表导出到磁盘临时表；</p>
-<p><strong>使用临时表的场景</strong></p>
-<ol>
-<li>ORDER BY子句和GROUP BY子句不同， 例如：ORDERY BY price GROUP BY name；</li>
-<li>在JOIN查询中，ORDER BY或者GROUP BY使用了不是第一个表的列 例如：SELECT * from TableA, TableB ORDER BY TableA.price GROUP by TableB.name</li>
-<li>ORDER BY中使用了DISTINCT关键字 ORDERY BY DISTINCT(price)</li>
-<li>SELECT语句中指定了SQL_SMALL_RESULT关键字 SQL_SMALL_RESULT的意思就是告诉MySQL，结果会很小，请直接使用内存临时表，不需要使用索引排序 SQL_SMALL_RESULT必须和GROUP BY、DISTINCT或DISTINCTROW一起使用 一般情况下，我们没有必要使用这个选项，让MySQL服务器选择即可。</li>
-</ol>
-<p><strong>直接使用磁盘临时表的场景</strong></p>
-<ol>
-<li>表包含TEXT或者BLOB列；</li>
-<li>GROUP BY 或者 DISTINCT 子句中包含长度大于512字节的列；</li>
-<li>使用UNION或者UNION ALL时，SELECT子句中包含大于512字节的列；</li>
-</ol>
-<p><strong>临时表相关配置</strong></p>
-<p>tmp_table_size：指定系统创建的内存临时表最大大小；</p>
-<p>max_heap_table_size: 指定用户创建的内存表的最大大小；</p>
-<p>常见的避免临时表的方法有：</p>
-<p>1、在ORDER BY或者GROUP BY的列上创建索引；</p>
-<p>2、TEXT、大于512字节的字符串，基本上都是为了显示信息，而不会用于查询条件， 因此表设计的时候，应该将这些列独立到另外一张表。</p>
+<p>第二，采用boundValueOps(key).get(0,-1)获取计数key的值</p>
+<p>spring项目中已经很多原始数据是通过jdk序列化操作，所以第一种方式排除。</p>
 
     
 	
@@ -229,10 +207,10 @@
 <br>
 <hr>
 <ul class="copyright">
-	<li><span>本文标题：</span> <a href="/2018/11/16/再记一次sql优化/" target="_blank" title="再记一次sql优化">再记一次sql优化</a></li>
+	<li><span>本文标题：</span> <a href="/2019/04/16/redis的incr操作遇到的异常/" target="_blank" title="redis的incr操作遇到的异常">redis的incr操作遇到的异常</a></li>
 	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
-	<li><span>发布时间：</span> 2018.11.16</li>
-	<li><span>本文链接：</span> <a href="/2018/11/16/再记一次sql优化/" target="_blank" title="再记一次sql优化">https://sherryriver.github.io/2018/11/16/再记一次sql优化/</a></li>
+	<li><span>发布时间：</span> 2019.04.16</li>
+	<li><span>本文链接：</span> <a href="/2019/04/16/redis的incr操作遇到的异常/" target="_blank" title="redis的incr操作遇到的异常">https://sherryriver.github.io/2019/04/16/redis的incr操作遇到的异常/</a></li>
 	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
 </ul>
 
