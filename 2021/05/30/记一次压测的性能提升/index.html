@@ -23,8 +23,9 @@
 <meta property="og:description" content="最近工作是帮助券商客户技术平台jres落地 测试反馈架构压测的性能指标不符合预期，只有不到900tps。 jres技术框架在恒生内部的压测中能达到近8w的tps，抛开机器固有性能差异，也不至于下降这么离谱，遂开始排查原因。  目前架构网络拓扑图  应用服务是我写的一个demo，里面只有一些打印语句还有各服务间远程调用接口。瓶颈不应该会出现在这里。 登录后台服务器磁盘空间、io、cpu的指标 iot">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://sherryriver.github.io/upload/2021/test1.png">
+<meta property="og:image" content="https://sherryriver.github.io/upload/2021/test2.png">
 <meta property="article:published_time" content="2021-05-30T02:23:15.000Z">
-<meta property="article:modified_time" content="2021-05-31T07:39:20.402Z">
+<meta property="article:modified_time" content="2021-05-31T07:47:45.499Z">
 <meta property="article:author" content="sherryriver">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://sherryriver.github.io/upload/2021/test1.png">
@@ -193,6 +194,7 @@
 <p>iotop、top、free命令三连击，恒生也提供了see运维管控平台可以可视化观察。</p>
 <p>cpu指标20左右浮动，远远没进入瓶颈，所以首先排除机器的原因。</p>
 <p>再多次压测的过程中，发现随着并发量的提升，请求总量提升，压测的结果报告中开始出现504报错，引起了我的注意。</p>
+<p><img src="/upload/2021/test2.png"></p>
 <p>然后跟进log日志搜索504的报错日志，发现在业务日志中没有相关记录，在网关中有记录，目前阶段还是符合我前期的猜测和demo无关。重点排查nginx</p>
 <p>开始查阅了资料了解了下nginx的time wait原因，关注到keepalive参数，查看本机的conf配置 keepalive 100；</p>
 <p>把keepalive设置为1000，tps开始提升到2w，大喜。后面就是慢慢优化最适合的数值了。</p>
