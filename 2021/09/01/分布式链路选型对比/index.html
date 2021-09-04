@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>分布式链路选型对比 | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
+  
+
+  <meta name="description" content="背景 项目微服务化后，应用服务依赖越来越多，不同于以往单体架构的简单直连，一个请求往往需要多个模块共同协作处理，不同模块可能还依赖于不同的外部存储，各个模块的实现技术还不尽相同，一个请求是如何在整个系统不同模块间进行流转，整个调用链上的各个模块之间的调用关系如何，每个微服务处理的时间长短，处理的结果是否正确，很难去进行追踪，而这些信息对于整个系统运维、性能分析、故障追踪都特别有帮助，也正因为此，才">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式链路选型对比">
+<meta property="og:url" content="https://sherryriver.github.io/2021/09/01/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E9%80%89%E5%9E%8B%E5%AF%B9%E6%AF%94/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="背景 项目微服务化后，应用服务依赖越来越多，不同于以往单体架构的简单直连，一个请求往往需要多个模块共同协作处理，不同模块可能还依赖于不同的外部存储，各个模块的实现技术还不尽相同，一个请求是如何在整个系统不同模块间进行流转，整个调用链上的各个模块之间的调用关系如何，每个微服务处理的时间长短，处理的结果是否正确，很难去进行追踪，而这些信息对于整个系统运维、性能分析、故障追踪都特别有帮助，也正因为此，才">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-09-01T05:29:46.000Z">
+<meta property="article:modified_time" content="2021-09-01T08:34:54.151Z">
+<meta property="article:author" content="sherryriver">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-分布式链路选型对比" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">分布式链路选型对比</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2021.09.01</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6%E6%8A%80%E6%9C%AF/">流水账技术</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>背景</p>
+<p>项目微服务化后，应用服务依赖越来越多，不同于以往单体架构的简单直连，一个请求往往需要多个模块共同协作处理，不同模块可能还依赖于不同的外部存储，各个模块的实现技术还不尽相同，一个请求是如何在整个系统不同模块间进行流转，整个调用链上的各个模块之间的调用关系如何，每个微服务处理的时间长短，处理的结果是否正确，很难去进行追踪，而这些信息对于整个系统运维、性能分析、故障追踪都特别有帮助，也正因为此，才有了各种分布式链路追踪的技术。</p>
+<p>常见开源产品</p>
+<p>cat， zipkin， pinpoint , skywalking </p>
+<p>比较：（摘自网络）</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">cat</th>
+<th align="left">zipkin</th>
+<th align="left">pinpoint</th>
+<th>skywalking</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">依赖</td>
+<td align="left">Java 6，7，8Maven 3.2.3+mysql5.6Linux 2.6以及之上（2.6内核才可以支持epoll）</td>
+<td align="left">Java 6，7，8Maven3.2+rabbitMQ</td>
+<td align="left">Java 6，7，8maven3+Hbase0.94+</td>
+<td>Java 6，7，8maven3.0+nodejs zookeeper/nacos+elasticsearch</td>
+</tr>
+<tr>
+<td align="left">实现方式</td>
+<td align="left">代码埋点（拦截器，注解，过滤器等）</td>
+<td align="left">拦截请求，发送（HTTP，mq）数据至zipkin服务</td>
+<td align="left">java探针，字节码增强</td>
+<td>java探针，字节码增强</td>
+</tr>
+<tr>
+<td align="left">存储选择</td>
+<td align="left">mysql , hdfs</td>
+<td align="left">in-memory ， mysql ， Cassandra ， Elasticsearch</td>
+<td align="left">HBase</td>
+<td>elasticsearch , H2</td>
+</tr>
+<tr>
+<td align="left">通信方式</td>
+<td align="left">—</td>
+<td align="left">http ， MQ</td>
+<td align="left">thrift</td>
+<td>GRPC</td>
+</tr>
+<tr>
+<td align="left">MQ监控</td>
+<td align="left">不支持</td>
+<td align="left">不支持</td>
+<td align="left">不支持</td>
+<td>支持（RocketMQ，kafka）</td>
+</tr>
+<tr>
+<td align="left">全局调用统计</td>
+<td align="left">支持</td>
+<td align="left">不支持</td>
+<td align="left">支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td align="left">trace查询</td>
+<td align="left">不支持</td>
+<td align="left">支持</td>
+<td align="left">不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td align="left">报警</td>
+<td align="left">支持</td>
+<td align="left">不支持</td>
+<td align="left">支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td align="left">JVM监控</td>
+<td align="left">不支持</td>
+<td align="left">不支持</td>
+<td align="left">支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td align="left">star数</td>
+<td align="left">4.5K</td>
+<td align="left">7.9K</td>
+<td align="left">5.6K</td>
+<td>2.8K</td>
+</tr>
+<tr>
+<td align="left">优点</td>
+<td align="left">功能完善。</td>
+<td align="left">spring-cloud-sleuth可以很好的集成zipkin ， 代码无侵入，集成非常简单 ， 社区更加活跃。对外提供有query接口，更加容易二次开发</td>
+<td align="left">完全无侵入， 仅需修改启动方式，界面完善，功能细致。</td>
+<td>完全无侵入，界面完善，支持应用拓扑图及单个调用链查询。功能比较完善（zipkin + pinpoint）</td>
+</tr>
+<tr>
+<td align="left">缺点</td>
+<td align="left">代码侵入性较强，需要埋点文档比较混乱，文档与发布版本的符合性较低，需要依赖点评私服 （或者需要把他私服上的jar手动下载下来，然后上传到我们的私服上去）。</td>
+<td align="left">默认使用的是http请求向zipkin上报信息，耗性能。跟sleuth结合可以使用rabbitMQ的方式异步来做，增加了复杂度，需要引入rabbitMQ 。数据分析比较简单。</td>
+<td align="left">不支持查询单个调用链， 对外表现的是整个应用的调用生态。二次开发难度较高</td>
+<td>3.2版本之前BUG较多 ，网上反映兼容性较差 . 3.2新版本的反映情况较少依赖较多。</td>
+</tr>
+<tr>
+<td align="left">文档</td>
+<td align="left">网上资料较少，仅官网提供的文档，比较乱</td>
+<td align="left">文档完善</td>
+<td align="left">文档完善</td>
+<td>文档完善</td>
+</tr>
+<tr>
+<td align="left">开发者</td>
+<td align="left">大众点评</td>
+<td align="left">twitter</td>
+<td align="left">naver</td>
+<td>吴晟（华为开发者） ，目前已经加入Apache孵化器</td>
+</tr>
+<tr>
+<td align="left">使用公司</td>
+<td align="left">大众点评， 携程， 陆金所，同程旅游，猎聘网</td>
+<td align="left">twitter</td>
+<td align="left">naver</td>
+<td>华为软件开发云、天源迪科、当当网、京东金融</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>性能测试报告（摘自网络）</p>
+<p>模拟了三种并发用户：500，750，1000。使用jmeter测试，每个线程发送30个请求，设置思考时间为10ms。使用的采样率为1，即100%</p>
+
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2021/09/01/分布式链路选型对比/" target="_blank" title="分布式链路选型对比">分布式链路选型对比</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2021.09.01</li>
+	<li><span>本文链接：</span> <a href="/2021/09/01/分布式链路选型对比/" target="_blank" title="分布式链路选型对比">https://sherryriver.github.io/2021/09/01/分布式链路选型对比/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

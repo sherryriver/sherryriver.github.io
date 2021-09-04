@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>mybatis拦截器 | Sherryriver - 止不住的音符~</title>
+  <title>记录一些有关zk命令 | Sherryriver - 止不住的音符~</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -15,15 +15,15 @@
     <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
   
 
-  <meta name="description" content="给券商公司提供技术解决方案时候网上查到这方面内容，spring拦截器使用的比较多，mybatis拦截器还是第一次了解（孤陋寡闻了）。 使用mybatis自定义拦截器，可以对执行的sql进行一层过滤包装。 步骤：  实现org.apache.ibatis.plugin.Interceptor接口的拦截器类，并实现其中的方法。 添加@Intercepts注解，写上需要拦截的对象和方法，以及方法参数。">
+  <meta name="description" content="可以通过命令：echo stat|nc 127.0.0.1 2181 来查看哪个节点被选择作为follower或者leader 使用echo ruok|nc 127.0.0.1 2181 测试是否启动了该Server，若回复imok表示已经启动。 echo dump| nc 127.0.0.1 2181 ,列出未经处理的会话和临时节点。 echo kill | nc 127.0.0.1 2181">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mybatis拦截器">
-<meta property="og:url" content="https://sherryriver.github.io/2021/04/18/mybatis%E6%8B%A6%E6%88%AA%E5%99%A8/index.html">
+<meta property="og:title" content="记录一些有关zk命令">
+<meta property="og:url" content="https://sherryriver.github.io/2021/08/10/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E6%9C%89%E5%85%B3zk%E5%91%BD%E4%BB%A4/index.html">
 <meta property="og:site_name" content="Sherryriver - 止不住的音符~">
-<meta property="og:description" content="给券商公司提供技术解决方案时候网上查到这方面内容，spring拦截器使用的比较多，mybatis拦截器还是第一次了解（孤陋寡闻了）。 使用mybatis自定义拦截器，可以对执行的sql进行一层过滤包装。 步骤：  实现org.apache.ibatis.plugin.Interceptor接口的拦截器类，并实现其中的方法。 添加@Intercepts注解，写上需要拦截的对象和方法，以及方法参数。">
+<meta property="og:description" content="可以通过命令：echo stat|nc 127.0.0.1 2181 来查看哪个节点被选择作为follower或者leader 使用echo ruok|nc 127.0.0.1 2181 测试是否启动了该Server，若回复imok表示已经启动。 echo dump| nc 127.0.0.1 2181 ,列出未经处理的会话和临时节点。 echo kill | nc 127.0.0.1 2181">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-04-18T05:29:29.000Z">
-<meta property="article:modified_time" content="2021-08-17T11:47:13.717Z">
+<meta property="article:published_time" content="2021-08-10T08:23:57.000Z">
+<meta property="article:modified_time" content="2021-08-10T09:10:32.204Z">
 <meta property="article:author" content="sherryriver">
 <meta name="twitter:card" content="summary">
 
@@ -140,14 +140,14 @@
 
 
 <div class="content content-post LEFT">
-   <article id="post-mybatis拦截器" class="article article-type-post" itemprop="blogPost">
+   <article id="post-记录一些有关zk命令" class="article article-type-post" itemprop="blogPost">
   <header class="article-header">
-    <h1 class="post-title">mybatis拦截器</h1>
+    <h1 class="post-title">记录一些有关zk命令</h1>
 
     <div class="article-meta">
       <span>
         <i class="icon-calendar"></i>
-        <span>2021.04.18</span>
+        <span>2021.08.10</span>
       </span>
 
       
@@ -181,24 +181,22 @@
 
   <div class="article-content">
     
-      <p>给券商公司提供技术解决方案时候网上查到这方面内容，spring拦截器使用的比较多，mybatis拦截器还是第一次了解（孤陋寡闻了）。</p>
-<p>使用mybatis自定义拦截器，可以对执行的sql进行一层过滤包装。</p>
-<p>步骤：</p>
-<ul>
-<li>实现org.apache.ibatis.plugin.Interceptor接口的拦截器类，并实现其中的方法。</li>
-<li>添加@Intercepts注解，写上需要拦截的对象和方法，以及方法参数。</li>
-<li>进行MyBatis配置，配置文件中添加拦截器。</li>
-</ul>
-<p>mybatis拦截器有四种类型：Executor、StatementHandler、ParameterHandler和ResultSetHandler</p>
-<p>总体概括为：</p>
-<ul>
-<li>Executor提供了增删改查的接口.</li>
-<li>StatementHandler负责处理Mybatis与JDBC之间Statement的交互.</li>
-<li>ResultSetHandler负责处理Statement执行后产生的结果集，生成结果列表.</li>
-<li>ParameterHandler是Mybatis实现Sql入参设置的对象。</li>
-</ul>
-<p>Mybatis的拦截器是通过JDK动态代理实现</p>
-<p>拦截器实现Mybatis分页的一个思路就是拦截StatementHandler接口的prepare方法。</p>
+      <ol>
+<li>可以通过命令：echo stat|nc 127.0.0.1 2181 来查看哪个节点被选择作为follower或者leader</li>
+<li>使用echo ruok|nc 127.0.0.1 2181 测试是否启动了该Server，若回复imok表示已经启动。</li>
+<li>echo dump| nc 127.0.0.1 2181 ,列出未经处理的会话和临时节点。</li>
+<li>echo kill | nc 127.0.0.1 2181 ,关掉server</li>
+<li>echo conf | nc 127.0.0.1 2181 ,输出相关服务配置的详细信息。</li>
+<li>echo cons | nc 127.0.0.1 2181 ,列出所有连接到服务器的客户端的完全的连接 / 会话的详细信息。</li>
+<li>echo envi |nc 127.0.0.1 2181 ,输出关于服务环境的详细信息（区别于 conf 命令）。</li>
+<li>echo reqs | nc 127.0.0.1 2181 ,列出未经处理的请求。</li>
+<li>echo wchs | nc 127.0.0.1 2181 ,列出服务器 watch 的详细信息。</li>
+<li>echo wchc | nc 127.0.0.1 2181 ,通过 session 列出服务器 watch 的详细信息，它的输出是一个与 watch 相关的会话的列表。</li>
+<li>echo wchp | nc 127.0.0.1 2181 ,通过路径列出服务器 watch 的详细信息。它输出一个与 session 相关的路径。</li>
+</ol>
+<p>ps ：出现 conf is not executed because it is not in the whitelist报错  </p>
+<p>解决方案 ：默认是不开启 四字命令管理的，在 zoo.cfg 中配置下面的参数后，重启z’k</p>
+<p>4lw.commands.whitelist=* </p>
 
     
 	
@@ -208,10 +206,10 @@
 <br>
 <hr>
 <ul class="copyright">
-	<li><span>本文标题：</span> <a href="/2021/04/18/mybatis拦截器/" target="_blank" title="mybatis拦截器">mybatis拦截器</a></li>
+	<li><span>本文标题：</span> <a href="/2021/08/10/记录一些有关zk命令/" target="_blank" title="记录一些有关zk命令">记录一些有关zk命令</a></li>
 	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
-	<li><span>发布时间：</span> 2021.04.18</li>
-	<li><span>本文链接：</span> <a href="/2021/04/18/mybatis拦截器/" target="_blank" title="mybatis拦截器">https://sherryriver.github.io/2021/04/18/mybatis拦截器/</a></li>
+	<li><span>发布时间：</span> 2021.08.10</li>
+	<li><span>本文链接：</span> <a href="/2021/08/10/记录一些有关zk命令/" target="_blank" title="记录一些有关zk命令">https://sherryriver.github.io/2021/08/10/记录一些有关zk命令/</a></li>
 	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
 </ul>
 
