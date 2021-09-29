@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>DDD学习笔记 | Sherryriver - 止不住的音符~</title>
+  <title>记一次es问题解决 | Sherryriver - 止不住的音符~</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -15,15 +15,15 @@
     <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
   
 
-  <meta name="description" content="为什么需要DDD？ 我们都知道随着技术的发展，架构也在不断的演变，从单机架构到分布式架构再到现在火热的微服务（现在更火热的应该是service mesh了 哈笑~）但是微服务也存在一些问题，微服务的粒度应该多大 ？ 微服务如何设计呢？ 微服务如何拆分 ？ 微服务边界在哪里 ？所以总结来说微服务的难点就是边界问题。而DDD就是解决了这个确定业务边界的问题，可见DDD并不是一种技术架构，而是一种划分业">
+  <meta name="description" content="线上es日志报错  disk usage exceeded flood-stage watermark, index has read-only-allow-delete es索引只读问题 登录到服务器 df命令一看磁盘满了，并开始尝试清理资源，完毕后再次测试发现仍然报错，百思不得其解 查阅资料后发现 当Elasticsearch认为磁盘空间不足时，它会进入只读模式，一旦有足够空间后es是不会自动">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DDD学习笔记">
-<meta property="og:url" content="https://sherryriver.github.io/2020/12/10/DDD%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:title" content="记一次es问题解决">
+<meta property="og:url" content="https://sherryriver.github.io/2021/09/24/%E8%AE%B0%E4%B8%80%E6%AC%A1es%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/index.html">
 <meta property="og:site_name" content="Sherryriver - 止不住的音符~">
-<meta property="og:description" content="为什么需要DDD？ 我们都知道随着技术的发展，架构也在不断的演变，从单机架构到分布式架构再到现在火热的微服务（现在更火热的应该是service mesh了 哈笑~）但是微服务也存在一些问题，微服务的粒度应该多大 ？ 微服务如何设计呢？ 微服务如何拆分 ？ 微服务边界在哪里 ？所以总结来说微服务的难点就是边界问题。而DDD就是解决了这个确定业务边界的问题，可见DDD并不是一种技术架构，而是一种划分业">
+<meta property="og:description" content="线上es日志报错  disk usage exceeded flood-stage watermark, index has read-only-allow-delete es索引只读问题 登录到服务器 df命令一看磁盘满了，并开始尝试清理资源，完毕后再次测试发现仍然报错，百思不得其解 查阅资料后发现 当Elasticsearch认为磁盘空间不足时，它会进入只读模式，一旦有足够空间后es是不会自动">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-12-10T03:17:37.000Z">
-<meta property="article:modified_time" content="2021-09-27T07:57:55.595Z">
+<meta property="article:published_time" content="2021-09-24T08:52:26.000Z">
+<meta property="article:modified_time" content="2021-09-24T09:25:31.854Z">
 <meta property="article:author" content="sherryriver">
 <meta name="twitter:card" content="summary">
 
@@ -140,14 +140,14 @@
 
 
 <div class="content content-post LEFT">
-   <article id="post-DDD学习笔记" class="article article-type-post" itemprop="blogPost">
+   <article id="post-记一次es问题解决" class="article article-type-post" itemprop="blogPost">
   <header class="article-header">
-    <h1 class="post-title">DDD学习笔记</h1>
+    <h1 class="post-title">记一次es问题解决</h1>
 
     <div class="article-meta">
       <span>
         <i class="icon-calendar"></i>
-        <span>2020.12.10</span>
+        <span>2021.09.24</span>
       </span>
 
       
@@ -158,11 +158,6 @@
       
 
       
-  <span class="article-category">
-    <i class="icon-list"></i>
-    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
-  </span>
-
 
 
       
@@ -181,31 +176,26 @@
 
   <div class="article-content">
     
-      <p>为什么需要DDD？</p>
-<p>我们都知道随着技术的发展，架构也在不断的演变，从单机架构到分布式架构再到现在火热的微服务（现在更火热的应该是service mesh了 哈笑~）但是微服务也存在一些问题，微服务的粒度应该多大 ？ 微服务如何设计呢？ 微服务如何拆分 ？ 微服务边界在哪里 ？所以总结来说微服务的难点就是边界问题。而DDD就是解决了这个确定业务边界的问题，可见DDD并不是一种技术架构，而是一种划分业务领域范围的方法论。可以很好实现微服务内部和外部的”高内聚、低耦合”。</p>
-<blockquote>
-<p>领域模型(domain model)是对领域内的概念类或现实世界中对象的可视化表示。领域模型也称为概念模型、领域对象模型和分析对象模型。</p>
-</blockquote>
-<p>DDD领域驱动设计</p>
-<p>领域驱动设计，我们做开发中容易出现对一些功能归属模糊不清，区别于传统架构设计，ddd帮助做到清晰划分。</p>
-<p>既面向技术也面向业务，从业务的角度来把握设计方案</p>
-<p>4个特点：统一思想、明确分工、反映变化、边界分离。</p>
-<p>4种模式：失血模式、贫血模式、充血模式、胀血模式。</p>
-<p>失血模式：模型中只有简单的get set方法，是对一个实体最简单的封装，其他所有的业务行为由服务类来完成。</p>
-<p>贫血模式：在失血模型基础之上聚合了业务领域行为，不关心数据持久化。</p>
-<p>充血模式：在贫血模型基础上，负责数据的持久化。</p>
-<p>胀血模式：service都不需要，所有的业务逻辑、数据存储都放到一个类中。</p>
-<p>对于DDD来说，失血和胀血都是不合适的，充血模型依赖repository接口，与数据存储紧密相关，有破坏程序稳定性的风险。</p>
-<p>建模方法：</p>
-<ul>
-<li>用例分析法</li>
-</ul>
-<ul>
-<li>四色建模法</li>
-</ul>
-<ul>
-<li>事件风暴</li>
-</ul>
+      <p>线上es日志报错 </p>
+<p>disk usage exceeded flood-stage watermark, index has read-only-allow-delete</p>
+<p>es索引只读问题</p>
+<p>登录到服务器 df命令一看磁盘满了，并开始尝试清理资源，完毕后再次测试发现仍然报错，百思不得其解 查阅资料后发现</p>
+<p>当Elasticsearch认为磁盘空间不足时，它会进入只读模式，一旦有足够空间后es是不会自动退出只读模式。需要执行操作解锁</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">put _settings</span><br><span class="line">&#123;</span><br><span class="line">	“index”: &#123;</span><br><span class="line">		“blocks”: &#123;</span><br><span class="line">			“read_only_allow_delete”: “<span class="keyword">false</span>”</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>当前问题解决了</p>
+<p>思考是否可以做个定时删除es占用数据来避免事件再次发生</p>
+<p>刚好我们业务可以接受只保存最近一段时间数据</p>
+<p>编写一个脚本，增加可执行权限 chmod +x  es_del.sh</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">#!/bin/bash</span><br><span class="line">#定时删除elasticsearch索引</span><br><span class="line">#author</span><br><span class="line"></span><br><span class="line">date=`date -d <span class="string">&quot;-7 days&quot;</span> <span class="string">&quot;+%Y.%m.%d&quot;</span>`</span><br><span class="line">/usr/bin/curl -v --user elastic:password -XDELETE <span class="string">&quot;http://xxx.xxx.xx.xxx:9200/*-$date&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>设置定时任务</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="number">00</span> <span class="number">01</span> * * * /workspace/script/es_del.sh</span><br></pre></td></tr></table></figure>
+
 
     
 	
@@ -215,10 +205,10 @@
 <br>
 <hr>
 <ul class="copyright">
-	<li><span>本文标题：</span> <a href="/2020/12/10/DDD学习笔记/" target="_blank" title="DDD学习笔记">DDD学习笔记</a></li>
+	<li><span>本文标题：</span> <a href="/2021/09/24/记一次es问题解决/" target="_blank" title="记一次es问题解决">记一次es问题解决</a></li>
 	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
-	<li><span>发布时间：</span> 2020.12.10</li>
-	<li><span>本文链接：</span> <a href="/2020/12/10/DDD学习笔记/" target="_blank" title="DDD学习笔记">https://sherryriver.github.io/2020/12/10/DDD学习笔记/</a></li>
+	<li><span>发布时间：</span> 2021.09.24</li>
+	<li><span>本文链接：</span> <a href="/2021/09/24/记一次es问题解决/" target="_blank" title="记一次es问题解决">https://sherryriver.github.io/2021/09/24/记一次es问题解决/</a></li>
 	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
 </ul>
 

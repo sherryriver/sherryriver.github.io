@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>DDD学习笔记 | Sherryriver - 止不住的音符~</title>
+  <title>乱弹琴，从zookeeper想到云原生 | Sherryriver - 止不住的音符~</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -15,15 +15,15 @@
     <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
   
 
-  <meta name="description" content="为什么需要DDD？ 我们都知道随着技术的发展，架构也在不断的演变，从单机架构到分布式架构再到现在火热的微服务（现在更火热的应该是service mesh了 哈笑~）但是微服务也存在一些问题，微服务的粒度应该多大 ？ 微服务如何设计呢？ 微服务如何拆分 ？ 微服务边界在哪里 ？所以总结来说微服务的难点就是边界问题。而DDD就是解决了这个确定业务边界的问题，可见DDD并不是一种技术架构，而是一种划分业">
+  <meta name="description" content="本文逻辑混乱基本属于想到哪就到那。 zk是我在工作中经常接触的技术框架，做一些技术中间件的时候经常会把它列入选型中。 但是这两年一直火热的云原生，zk显得落寞起来。 云原生技术意在在公有云、私有云和混合云等环境中构建和运行可弹性扩展的应用。云原生包括容器、服务网格、微服务、不可变基础设施和声明式API等。 想要落地云原生，关键步骤就是 mesh化，核心就是service mesh （服务网格） 服">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DDD学习笔记">
-<meta property="og:url" content="https://sherryriver.github.io/2020/12/10/DDD%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:title" content="乱弹琴，从zookeeper想到云原生">
+<meta property="og:url" content="https://sherryriver.github.io/2021/09/06/%E4%BB%8Ezookeeper%E6%83%B3%E5%88%B0%E4%BA%91%E5%8E%9F%E7%94%9F/index.html">
 <meta property="og:site_name" content="Sherryriver - 止不住的音符~">
-<meta property="og:description" content="为什么需要DDD？ 我们都知道随着技术的发展，架构也在不断的演变，从单机架构到分布式架构再到现在火热的微服务（现在更火热的应该是service mesh了 哈笑~）但是微服务也存在一些问题，微服务的粒度应该多大 ？ 微服务如何设计呢？ 微服务如何拆分 ？ 微服务边界在哪里 ？所以总结来说微服务的难点就是边界问题。而DDD就是解决了这个确定业务边界的问题，可见DDD并不是一种技术架构，而是一种划分业">
+<meta property="og:description" content="本文逻辑混乱基本属于想到哪就到那。 zk是我在工作中经常接触的技术框架，做一些技术中间件的时候经常会把它列入选型中。 但是这两年一直火热的云原生，zk显得落寞起来。 云原生技术意在在公有云、私有云和混合云等环境中构建和运行可弹性扩展的应用。云原生包括容器、服务网格、微服务、不可变基础设施和声明式API等。 想要落地云原生，关键步骤就是 mesh化，核心就是service mesh （服务网格） 服">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-12-10T03:17:37.000Z">
-<meta property="article:modified_time" content="2021-09-27T07:57:55.595Z">
+<meta property="article:published_time" content="2021-09-06T09:31:25.000Z">
+<meta property="article:modified_time" content="2021-09-09T05:56:16.934Z">
 <meta property="article:author" content="sherryriver">
 <meta name="twitter:card" content="summary">
 
@@ -140,14 +140,14 @@
 
 
 <div class="content content-post LEFT">
-   <article id="post-DDD学习笔记" class="article article-type-post" itemprop="blogPost">
+   <article id="post-从zookeeper想到云原生" class="article article-type-post" itemprop="blogPost">
   <header class="article-header">
-    <h1 class="post-title">DDD学习笔记</h1>
+    <h1 class="post-title">乱弹琴，从zookeeper想到云原生</h1>
 
     <div class="article-meta">
       <span>
         <i class="icon-calendar"></i>
-        <span>2020.12.10</span>
+        <span>2021.09.06</span>
       </span>
 
       
@@ -158,11 +158,6 @@
       
 
       
-  <span class="article-category">
-    <i class="icon-list"></i>
-    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
-  </span>
-
 
 
       
@@ -181,31 +176,26 @@
 
   <div class="article-content">
     
-      <p>为什么需要DDD？</p>
-<p>我们都知道随着技术的发展，架构也在不断的演变，从单机架构到分布式架构再到现在火热的微服务（现在更火热的应该是service mesh了 哈笑~）但是微服务也存在一些问题，微服务的粒度应该多大 ？ 微服务如何设计呢？ 微服务如何拆分 ？ 微服务边界在哪里 ？所以总结来说微服务的难点就是边界问题。而DDD就是解决了这个确定业务边界的问题，可见DDD并不是一种技术架构，而是一种划分业务领域范围的方法论。可以很好实现微服务内部和外部的”高内聚、低耦合”。</p>
-<blockquote>
-<p>领域模型(domain model)是对领域内的概念类或现实世界中对象的可视化表示。领域模型也称为概念模型、领域对象模型和分析对象模型。</p>
-</blockquote>
-<p>DDD领域驱动设计</p>
-<p>领域驱动设计，我们做开发中容易出现对一些功能归属模糊不清，区别于传统架构设计，ddd帮助做到清晰划分。</p>
-<p>既面向技术也面向业务，从业务的角度来把握设计方案</p>
-<p>4个特点：统一思想、明确分工、反映变化、边界分离。</p>
-<p>4种模式：失血模式、贫血模式、充血模式、胀血模式。</p>
-<p>失血模式：模型中只有简单的get set方法，是对一个实体最简单的封装，其他所有的业务行为由服务类来完成。</p>
-<p>贫血模式：在失血模型基础之上聚合了业务领域行为，不关心数据持久化。</p>
-<p>充血模式：在贫血模型基础上，负责数据的持久化。</p>
-<p>胀血模式：service都不需要，所有的业务逻辑、数据存储都放到一个类中。</p>
-<p>对于DDD来说，失血和胀血都是不合适的，充血模型依赖repository接口，与数据存储紧密相关，有破坏程序稳定性的风险。</p>
-<p>建模方法：</p>
-<ul>
-<li>用例分析法</li>
-</ul>
-<ul>
-<li>四色建模法</li>
-</ul>
-<ul>
-<li>事件风暴</li>
-</ul>
+      <p>本文逻辑混乱基本属于想到哪就到那。</p>
+<p>zk是我在工作中经常接触的技术框架，做一些技术中间件的时候经常会把它列入选型中。</p>
+<p>但是这两年一直火热的云原生，zk显得落寞起来。</p>
+<p>云原生技术意在在公有云、私有云和混合云等环境中构建和运行可弹性扩展的应用。云原生包括容器、服务网格、微服务、不可变基础设施和声明式API等。</p>
+<p>想要落地云原生，关键步骤就是 mesh化，核心就是service mesh （服务网格）</p>
+<p>服务网格：服务间通信的基础设施层</p>
+<p>怎么理解服务网格呢？ </p>
+<p>通俗的比方可以把service mesh当作微服务间的TCP协议</p>
+<p>服务网格相对于当前的微服务最明显的优势是下沉基础设置，让服务治理和业务开发分离。</p>
+<p>举个简单的例子，如果在微服务架构中想要做好服务治理，不得不引入大量的第三方组件，如限流、熔断，监控，服务发现，负载均衡、链路追踪等等一系列组件，而这些组件大概率需要以jar包的形式被业务代码依赖，甚至不同的开发语言还得维护不同的组件，业务和基础设施耦合让服务治理变得异常困难。</p>
+<p>service mesh处理服务间的通信，通常由一系列网格代理组成，对应用程序透明。服务治理中的一切（包括但不限于上述的限流、熔断、监控、服务发现等）都可以下沉到网格代理中。</p>
+<p>而在云原生体系下的服务注册与发现机制与dubbo的服务注册发现机制有很大区别，云原生是基于容器编排，主流的 k8s 服务注册发现是基于 DNS ，也就是通过一个域名查找到一个对应的ip。由于zookeeper基于ip提供服务注册和发现，面对云原生zk显得招架不住了。</p>
+<p>nacos闪亮登场</p>
+<p>有关nacos的介绍不多说了网上很齐全，现在思考的是假设一个使用zk很多年的产品项目如何从zookeeper平滑地迁移到nacos上，跟上云原生的浪潮。</p>
+<p>网上找了一些方案供参考</p>
+<p>方案一双注册模式</p>
+<p>将服务注册改为双注册（同时注册到zookeeper与nacos），等所有应用改造完成后再统一切换到nacos</p>
+<p>评价：实现简单，但是不全面，一些无人维护的老系统需要去改动可能会导致bug</p>
+<p>方案二nacos sync同步方案</p>
+<p>Nacos-Sync是一个跨注册中心服务同步组件，支持Zookeeper/Eureka/Consul/Nacos等注册中心间服务同步和迁移。</p>
 
     
 	
@@ -215,10 +205,10 @@
 <br>
 <hr>
 <ul class="copyright">
-	<li><span>本文标题：</span> <a href="/2020/12/10/DDD学习笔记/" target="_blank" title="DDD学习笔记">DDD学习笔记</a></li>
+	<li><span>本文标题：</span> <a href="/2021/09/06/从zookeeper想到云原生/" target="_blank" title="乱弹琴，从zookeeper想到云原生">乱弹琴，从zookeeper想到云原生</a></li>
 	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
-	<li><span>发布时间：</span> 2020.12.10</li>
-	<li><span>本文链接：</span> <a href="/2020/12/10/DDD学习笔记/" target="_blank" title="DDD学习笔记">https://sherryriver.github.io/2020/12/10/DDD学习笔记/</a></li>
+	<li><span>发布时间：</span> 2021.09.06</li>
+	<li><span>本文链接：</span> <a href="/2021/09/06/从zookeeper想到云原生/" target="_blank" title="乱弹琴，从zookeeper想到云原生">https://sherryriver.github.io/2021/09/06/从zookeeper想到云原生/</a></li>
 	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
 </ul>
 
