@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>rabbitmq集群原理 | Sherryriver - 止不住的音符~</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="lingo,sheryriver,Hexo主题,木木三可" />
+  
+
+  <meta name="description" content="RabbitMQ本身是基于Erlang编写，Erlang语言天生具备分布式特性（通过同步Erlang集群各节点的erlang.cookie来实现）。因此，RabbitMQ天然支持集群。 Rabbitmq默认的集群模式RabbitMQ集群会始终同步四种类型的内部元数据：  队列元数据：队列名称和它的属性 交换器元数据：交换器名称、类型和属性 绑定元数据：一张简单的表格展示了如何将消息路由到队列 vh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rabbitmq集群原理">
+<meta property="og:url" content="https://sherryriver.github.io/2022/02/25/rabbitmq%E9%9B%86%E7%BE%A4%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="Sherryriver - 止不住的音符~">
+<meta property="og:description" content="RabbitMQ本身是基于Erlang编写，Erlang语言天生具备分布式特性（通过同步Erlang集群各节点的erlang.cookie来实现）。因此，RabbitMQ天然支持集群。 Rabbitmq默认的集群模式RabbitMQ集群会始终同步四种类型的内部元数据：  队列元数据：队列名称和它的属性 交换器元数据：交换器名称、类型和属性 绑定元数据：一张简单的表格展示了如何将消息路由到队列 vh">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-25T09:54:01.000Z">
+<meta property="article:modified_time" content="2022-06-17T07:32:00.368Z">
+<meta property="article:author" content="sherryriver">
+<meta name="twitter:card" content="summary">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    
+<link rel="stylesheet" href="/css/toolbox.css">
+
+  
+
+  
+
+  
+
+  
+  <!--文章浏览信息记录-->
+  
+     <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">导航</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">导航</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox" style="display:block">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/time"
+            target="_self"
+            >
+            时间轴
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Rabbitmq%E9%BB%98%E8%AE%A4%E7%9A%84%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F"><span class="toc-text">Rabbitmq默认的集群模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RabbitMQ%E9%95%9C%E5%83%8F%E9%98%9F%E5%88%97%E6%A8%A1%E5%BC%8F"><span class="toc-text">RabbitMQ镜像队列模式</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-rabbitmq集群原理" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">rabbitmq集群原理</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2022.02.25</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>sherryriver</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6%E6%8A%80%E6%9C%AF/">流水账技术</a>
+  </span>
+
+
+
+      
+	  
+	  <! -- 文章浏览记录 -->
+	  
+       <i class="fa fa-eye"></i> 
+         <span id="busuanzi_container_page_pv">
+            &nbsppv:<span id="busuanzi_value_page_pv">
+            <i class="fa fa-spinner fa-spin"></i></span>
+         </span>
+       
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>RabbitMQ本身是基于Erlang编写，Erlang语言天生具备分布式特性（通过同步Erlang集群各节点的erlang.cookie来实现）。因此，RabbitMQ天然支持集群。</p>
+<h3 id="Rabbitmq默认的集群模式"><a href="#Rabbitmq默认的集群模式" class="headerlink" title="Rabbitmq默认的集群模式"></a>Rabbitmq默认的集群模式</h3><p>RabbitMQ集群会始终同步四种类型的内部元数据：</p>
+<ol>
+<li>队列元数据：队列名称和它的属性</li>
+<li>交换器元数据：交换器名称、类型和属性</li>
+<li>绑定元数据：一张简单的表格展示了如何将消息路由到队列</li>
+<li>vhost元数据：为vhost内的队列、交换器和绑定提供命名空间和安全属性</li>
+</ol>
+<p>因此，当用户访问其中任何一个RabbitMQ节点时，通过rabbitmqctl查询到的queue／user／exchange/vhost等信息都是相同的</p>
+<p>RabbitMQ集群仅采用元数据同步的方式一方面是节省存储空间，不需要copy完全数据。二来提高性能</p>
+<p>默认集群模式，并不保证队列的高可用性。尽管交换机、绑定这些可以复制到集群里的任何一个节点，但是队列内容不会复制。虽然该模式解决一项目组节点压力，但队列节点宕机直接导致该队列无法应用，只能等待重启。所以要想在队列节点宕机或故障也能正常应用，就要复制队列内容到集群里的每个节点，必须要创建镜像队列。</p>
+<h3 id="RabbitMQ镜像队列模式"><a href="#RabbitMQ镜像队列模式" class="headerlink" title="RabbitMQ镜像队列模式"></a>RabbitMQ镜像队列模式</h3><p>镜像队列是基于普通的集群模式的。</p>
+<p>镜像队列基本上就是一个特殊的BackingQueue，它内部包裹了一个普通的BackingQueue做本地消息持久化处理，在此基础上增加了将消息和ack复制到所有镜像的功能。所有对mirror_queue_master的操作，会通过可靠组播GM的方式同步到各slave节点。GM负责消息的广播，mirror_queue_slave负责回调处理，而master上的回调处理是由coordinator负责完成。mirror_queue_slave中包含了普通的BackingQueue进行消息的存储，master节点中BackingQueue包含在mirror_queue_master中由AMQQueue进行调用。 消息的发布（除了Basic.Publish之外）与消费都是通过master节点完成。master节点对消息进行处理的同时将消息的处理动作通过GM广播给所有的slave节点，slave节点的GM收到消息后，通过回调交由mirror_queue_slave进行实际的处理。 对于Basic.Publish，消息同时发送到master和所有slave上，如果此时master宕掉了，消息还发送slave上，这样当slave提升为master的时候消息也不会丢失。</p>
+<p>GM模块实现的一种可靠的组播通讯协议，该协议能够保证组播消息的原子性，即保证组中活着的节点要么都收到消息要么都收不到。 它的实现大致如下： 将所有的节点形成一个循环链表，每个节点都会监控位于自己左右两边的节点，当有节点新增时，相邻的节点保证当前广播的消息会复制到新的节点上；当有节点失效时，相邻的节点会接管保证本次广播的消息会复制到所有的节点。在master节点和slave节点上的这些gm形成一个group，group（gm_group）的信息会记录在mnesia中。不同的镜像队列形成不同的group。消息从master节点对于的gm发出后，顺着链表依次传送到所有的节点，由于所有节点组成一个循环链表，master节点对应的gm最终会收到自己发送的消息，这个时候master节点就知道消息已经复制到所有的slave节点了。</p>
+<p>镜像队列属于HA方案。该模式解决了普通模式中的问题，根本区别在于消息实体会主动在镜像节点间同步，而不是在客户端拉取数据时临时拉取。当然弊端就是降低系统性能，大量消息写入。但是镜像队列不能作为负载均衡使用，因为每个操作在所有节点都要操作一遍。为了实现RabbitMQ集群的软负载均衡，可以选择HAProxy。Haproxy提供高可用性、负载均衡以及基于TCP和HTTP应用的代理，支持虚拟主机。Keepalived的作用是检测web服务器的状态，如果有一台web服务器死机，或工作出现故障，Keepalived将检测到，并将有故障的web服务器从系统中剔除，当web服务器工作正常后Keepalived自动将web服务器加入到服务器群中。</p>
+
+    
+	
+	<! -- 添加版权信息 -->
+	
+	<! -- 添加版权信息 -->
+<br>
+<hr>
+<ul class="copyright">
+	<li><span>本文标题：</span> <a href="/2022/02/25/rabbitmq集群原理/" target="_blank" title="rabbitmq集群原理">rabbitmq集群原理</a></li>
+	<li><span>文章作者：</span> <a href="/index.html" target="_blank" title="sherryriver">sherryriver（木木三可）</a></li>
+	<li><span>发布时间：</span> 2022.02.25</li>
+	<li><span>本文链接：</span> <a href="/2022/02/25/rabbitmq集群原理/" target="_blank" title="rabbitmq集群原理">https://sherryriver.github.io/2022/02/25/rabbitmq集群原理/</a></li>
+	<li><span>许可协议：</span> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。</li>
+</ul>
+
+<style>
+.copyright{
+  max-width: 40em;
+  margin: 1.2em auto 0;
+  padding: 0.5em 1.8em;
+  border: 1px solid #d3d3d3;
+  font-size: 0.93rem;
+  //line-height: 1.0em;
+  word-break: break-all;
+  background: rgba(255,255,255,0.4);
+}
+</style>
+	
+	
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/time"
+              target="_self"
+              >
+              时间轴
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+ 
+	
+	
+<!-- 集成有言评论-->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script>
+<!-- <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2147865"></script> -->
+
+<!-- UY END -->
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
